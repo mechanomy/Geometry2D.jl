@@ -1,5 +1,13 @@
 # This file is machine-generated - editing it directly is not advised
 
+[[BPlot]]
+deps = ["PyPlot"]
+git-tree-sha1 = "c81e0900738764d81e2feb106d4f5bdc11ea8857"
+repo-rev = "master"
+repo-url = "../BPlot"
+uuid = "d4f0b4df-fcc8-4d0a-9c39-735548b4f34b"
+version = "0.1.0"
+
 [[Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
