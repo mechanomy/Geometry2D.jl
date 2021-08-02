@@ -8,8 +8,9 @@ module Geometry2D
     using Printf
     using StaticArrays #for defined-length arrays: SVector{3,T}
 
-    import ..BPlot
-    
+    using BPlot
+    #import ..BPlot
+
     @derived_dimension Radian dimension(u"rad")
     const UnitVector{T} = SVector{3,T}
     const ui = UnitVector([1,0,0])
@@ -24,7 +25,7 @@ module Geometry2D
     # Point(;x::Number, y::Number) = Point( x*1.0u"mm", y*1.0u"mm" )
 
     # A circle has a <center::Geometry2D.Point> and a <radius::Unitful.Length>
-    struct Circle 
+    struct Circle
         center::Point #[x,y] of the pulley center
         radius::Unitful.Length
     end
@@ -63,7 +64,7 @@ module Geometry2D
     function isSegmentTangent( circleA::Circle, circleB::Circle, thA::Radian, thB::Radian, tol::Number=1e-3)
         rA = vectorLengthAngle(circleA.radius, thA)
         rB = vectorLengthAngle(circleB.radius, thB)
-        uA = normalize(rA) 
+        uA = normalize(rA)
         uB = normalize(rB)
 
         pA = addPointVector( circleA.center, rA )
@@ -84,7 +85,7 @@ module Geometry2D
         return (ustrip(angle) + 2*pi)%(2*pi) * 1.0u"rad"
     end
     function angleCorrect(angle)
-        return (angle + 2*pi)%(2*pi) 
+        return (angle + 2*pi)%(2*pi)
     end
 
 end #Geometry2D
