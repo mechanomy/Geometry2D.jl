@@ -21,8 +21,6 @@ module Geometry2D
         x::Unitful.Length
         y::Unitful.Length
     end
-    # Point(;x::Unitful.Length, y::Unitful.Length) = Point(x,y)
-    # Point(;x::Number, y::Number) = Point( x*1.0u"mm", y*1.0u"mm" )
 
     # A circle has a <center::Geometry2D.Point> and a <radius::Unitful.Length>
     struct Circle
