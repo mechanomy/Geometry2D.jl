@@ -1,17 +1,19 @@
 
-# include("BPlot.jl")
-
 module Geometry2D
     using LinearAlgebra #for cross(), dot(), norm()
     using Unitful
     using PyPlot #can use matplotlib arguments directly
     using Printf
     using StaticArrays #for defined-length arrays: SVector{3,T}
+    using QuadGK #for numerical integration of ellipseArcLength
 
     using BPlot
-    #import ..BPlot
 
     @derived_dimension Radian dimension(u"rad")
+    # @derived_dimension Degree dimension(2*pi)
+    # @unit deg "deg" Degree 360/2*pi false
+    Angle{T} = Union{Quantity{T,NoDims,typeof(u"rad")}, Quantity{T,NoDims,typeof(u"°")}} where T
+
     const UnitVector{T} = SVector{3,T}
     const ui = UnitVector([1,0,0])
     const uj = UnitVector([0,1,0])
@@ -40,6 +42,9 @@ module Geometry2D
     end
     function normalize( vec ) #LinearAlgebra.normalize messes up the units..
         return vec / norm(vec)
+    end
+    function length( vec )
+        return norm(vec)
     end
     function addPointVector(p::Point, v)
         return Point(p.x + v[1], p.y+v[2])
@@ -86,6 +91,31 @@ module Geometry2D
         return (angle + 2*pi)%(2*pi)
     end
 
-end #Geometry2D
 
+    function circleArcLength( angle::Angle, radius::Unitful.Length )
+        return uconvert(u"rad", angle) * radius
+    end
+
+    """
+    Compute the ellipse's sector length from the `major` axis towards the `minor` axis stopping at `angle` from `major`
+    ```
+    angle = 20u"°" 
+    major = 5u"mm"
+    minor = 3u"mm"
+    len = ellipseSectorLength(angle, major, minor)
+    ```
+    """
+    function ellipseArcLength( angle::Angle, major::Unitful.Length, minor::Unitful.Length )
+        #cf https://math.stackexchange.com/questions/433094/how-to-determine-the-arc-length-of-ellipse
+        ts = atan(major/minor*tan(uconvert(u"rad",angle))) #uconvert all to the same units
+        int,err = quadgk( t-> sqrt( (ustrip(u"mm",major)*cos(t))^2 + (ustrip(u"mm",minor)*sin(t))^2 ), 0, ts, rtol=1e-8 ) #uconvert all to the same units
+        int *= 1.0u"mm" #give int units
+        if err > 1e-3
+            println("ellipseSectorLength() had a large error term [$err], don't trust the length")
+        end
+        return uconvert(unit(major), int) #return in given units
+    end
+
+
+end #Geometry2D
 
