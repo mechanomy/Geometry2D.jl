@@ -125,7 +125,7 @@ module Geometry2D
         if major < minor
             throw(DomainError(major, "ellipseArcLength(): major axis length [$major] should be larger than minor [$minor]"))
         end
-        if (pi/2)u"rad" <= angle # a bit lazy, should redo the trig for full-circle angle
+        if (pi/2)u"rad" < angle # a bit lazy, should redo the trig for full-circle angle
             throw(DomainError(angle, "ellipseArcLength(): angle[$angle] should be \\< pi/2 = 45deg"))
         end
 

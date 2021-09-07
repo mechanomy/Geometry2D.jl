@@ -72,9 +72,9 @@ function test_ellipseMajorNegative()
   return true
 end
 
-```
-Throw a DomainError if `major` \< `minor`
-```
+"""
+Throw a DomainError if `major` < `minor`
+"""
 function test_ellipseMajorLessMinor()
   major = 1u"m"
   minor = 2u"m"
