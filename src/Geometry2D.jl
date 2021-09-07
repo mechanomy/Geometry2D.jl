@@ -7,7 +7,7 @@ module Geometry2D
     using StaticArrays #for defined-length arrays: SVector{3,T}
     using QuadGK #for numerical integration of ellipseArcLength
 
-    using BPlot
+    # using BPlot
 
     @derived_dimension Radian dimension(u"rad")
     # @derived_dimension Degree dimension(2*pi)
@@ -91,13 +91,22 @@ module Geometry2D
         return (angle + 2*pi)%(2*pi)
     end
 
-
+    """
+    Compute a circlular arc length at `radius` through `angle`
+    ```
+    angle = 20u"°" 
+    radius = 5u"mm"
+    len = circleArcLength(angle, radius)
+    ```
+    """
     function circleArcLength( angle::Angle, radius::Unitful.Length )
         return uconvert(u"rad", angle) * radius
     end
 
     """
-    Compute the ellipse's sector length from the `major` axis towards the `minor` axis stopping at `angle` from `major`
+    Compute an elliptical arc length from the `major` axis towards the `minor` axis stopping at `angle` from `major`. 
+    Throws DomainError if `major` or `minor` do not satisfy `0 \\< minor \\<= major`.
+    Throws Unitful.
     ```
     angle = 20u"°" 
     major = 5u"mm"
@@ -106,8 +115,22 @@ module Geometry2D
     ```
     """
     function ellipseArcLength( angle::Angle, major::Unitful.Length, minor::Unitful.Length )
+        # https://docs.julialang.org/en/v1/base/base/#Core.DomainError
+        if minor < 0u"mm"
+            throw(DomainError(minor, "ellipseArcLength(): minor axis length [$minor] should be positive"))
+        end
+        if major < 0u"mm"
+            throw(DomainError(major, "ellipseArcLength(): major axis length [$major] should be positive"))
+        end
+        if major < minor
+            throw(DomainError(major, "ellipseArcLength(): major axis length [$major] should be larger than minor [$minor]"))
+        end
+        if (pi/2)u"rad" <= angle # a bit lazy, should redo the trig for full-circle angle
+            throw(DomainError(angle, "ellipseArcLength(): angle[$angle] should be \\< pi/2 = 45deg"))
+        end
+
         #cf https://math.stackexchange.com/questions/433094/how-to-determine-the-arc-length-of-ellipse
-        ts = atan(major/minor*tan(uconvert(u"rad",angle))) #uconvert all to the same units
+        ts = abs(atan(major/minor*tan(uconvert(u"rad",angle)))) #uconvert all to the same units
         int,err = quadgk( t-> sqrt( (ustrip(u"mm",major)*cos(t))^2 + (ustrip(u"mm",minor)*sin(t))^2 ), 0, ts, rtol=1e-8 ) #uconvert all to the same units
         int *= 1.0u"mm" #give int units
         if err > 1e-3
