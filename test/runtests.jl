@@ -92,14 +92,23 @@ function test_ellipseNegativeAngle()
   # println("lPos $lPos lNeg $lNeg")
   return lPos == lNeg
 end
-
-
+function test_ellipseAngles()
+  close("all")
+  aStart = 10u"°"
+  aStop = 30u"°"
+  rMajor = 1u"mm"
+  rMinor = 0.5u"mm"
+  lArc = Geometry2D.ellipseArcLength(start=aStart, stop=aStop, radiusX=rMajor, radiusY=rMinor, showConstruction=true)
+  println("lArc[$lArc]")
+  return true
+end
 
 @testset "test ellipse length" begin
-  @test test_ellipseCircle()
-  @test_throws DomainError test_ellipseFullCircle()
-  @test_throws DomainError test_ellipseMajorLessMinor()
-  @test_throws DomainError test_ellipseMajorNegative()
-  @test_throws DomainError test_ellipseMinorNegative()
-  @test_throws DomainError test_ellipseLargeAngle()
+#   @test test_ellipseCircle()
+  @test test_ellipseAngles()
+#   @test_throws DomainError test_ellipseFullCircle()
+#   @test_throws DomainError test_ellipseMajorLessMinor()
+#   @test_throws DomainError test_ellipseMajorNegative()
+#   @test_throws DomainError test_ellipseMinorNegative()
+#   @test_throws DomainError test_ellipseLargeAngle()
 end

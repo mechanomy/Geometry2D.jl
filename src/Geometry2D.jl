@@ -104,39 +104,75 @@ module Geometry2D
     end
 
     """
-    Compute an elliptical arc length from the `major` axis towards the `minor` axis stopping at `angle` from `major`. 
-    Throws DomainError if `major` or `minor` do not satisfy `0 \\< minor \\<= major`.
-    Throws Unitful.
+    Convert the circular `angle` into an 'ellipse' angle for the ellipse described by `radiusX` and `radiusY` axis lengths
+    """
+    function circular2EllipseAngle(; angle::Angle, radiusX::Unitful.Length, radiusY::Unitful.Length)
+        #cf https://math.stackexchange.com/questions/433094/how-to-determine-the-arc-length-of-ellipse
+        return atan(radiusX/radiusY*tan(uconvert(u"rad",angle)))
+    end
+
+    """
+    Compute an elliptical arc length from the `radiusX` axis towards the `radiusY` axis between `start` and `stop` angles as measured from the `radiusX` axis
     ```
-    angle = 20u"°" 
-    major = 5u"mm"
-    minor = 3u"mm"
-    len = ellipseSectorLength(angle, major, minor)
+    start = 10u"°"
+    stop  = 20u"°"
+    radiusX = 5u"mm"
+    radiusY = 3u"mm"
+    len = ellipseSectorLength(start=start, stop=stop, radiusX=radiusX, radiusY=radiusY, showConstruction=true)
     ```
     """
-    function ellipseArcLength( angle::Angle, major::Unitful.Length, minor::Unitful.Length )
+    function ellipseArcLength(; start::Angle=0u"°", stop::Angle, radiusX::Unitful.Length, radiusY::Unitful.Length, showConstruction=false)
+
         # https://docs.julialang.org/en/v1/base/base/#Core.DomainError
-        if minor < 0u"mm"
-            throw(DomainError(minor, "ellipseArcLength(): minor axis length [$minor] should be positive"))
+        if radiusX < 0u"mm"
+            throw(DomainError(radiusX, "ellipseArcLength(): radiusX axis length [$radiusX] should be positive"))
         end
-        if major < 0u"mm"
-            throw(DomainError(major, "ellipseArcLength(): major axis length [$major] should be positive"))
+        if radiusY < 0u"mm"
+            throw(DomainError(radiusY, "ellipseArcLength(): radiusY axis length [$radiusY] should be positive"))
         end
-        if major < minor
-            throw(DomainError(major, "ellipseArcLength(): major axis length [$major] should be larger than minor [$minor]"))
-        end
-        if (pi/2)u"rad" < angle # a bit lazy, should redo the trig for full-circle angle
-            throw(DomainError(angle, "ellipseArcLength(): angle[$angle] should be \\< pi/2 = 45deg"))
-        end
+        # if stop < 0u"rad"
+        #     throw(DomainError(stop, "ellipseArcLength(): stop angle [$stop] should be positive"))
+        # end
+        # if start < 0u"rad"
+        #     throw(DomainError(start, "ellipseArcLength(): start angle [$start] should be positive"))
+        # end
 
         #cf https://math.stackexchange.com/questions/433094/how-to-determine-the-arc-length-of-ellipse
-        ts = abs(atan(major/minor*tan(uconvert(u"rad",angle)))) #uconvert all to the same units
-        int,err = quadgk( t-> sqrt( (ustrip(u"mm",major)*cos(t))^2 + (ustrip(u"mm",minor)*sin(t))^2 ), 0, ts, rtol=1e-8 ) #uconvert all to the same units
-        int *= 1.0u"mm" #give int units
+        estart = circular2EllipseAngle(angle=start, radiusX=radiusX, radiusY=radiusY) #the ellipse start angle
+        estop = circular2EllipseAngle(angle=stop, radiusX=radiusX, radiusY=radiusY) #the ellipse stop angle
+        int,err = quadgk( t-> sqrt( (ustrip(u"mm",radiusX)*cos(t))^2 + (ustrip(u"mm",radiusY)*sin(t))^2 ), estart, estop, rtol=1e-8 ) #convert lengths to mm, integrate along the arc of the ellipse
+
+        int *= 1.0u"mm" #reapply units
         if err > 1e-3
             println("ellipseSectorLength() had a large error term [$err], don't trust the length")
         end
-        return uconvert(unit(major), int) #return in given units
+
+        if showConstruction
+            umajor = ustrip(u"mm", radiusX)
+            uminor = ustrip(u"mm", radiusY)
+            ustop = ustrip(u"rad", stop)
+            ustart = ustrip(u"rad", start)
+            fig = figure()
+
+            #plot  givens
+            th = LinRange(0, 2*pi, 500) 
+            plot(umajor*cos.(th), umajor*sin.(th), "k:", label="major circle")
+            plot([0,cos(ustart)], [0,sin(ustart)], "go-", label=@sprintf("start[%3.3f°]", ustrip(u"°",start)))
+            plot([0,cos(ustop)], [0,sin(ustop)], "ro-", label=@sprintf("stop[%3.3f°]", ustrip(u"°",stop)))
+            plot(umajor*cos.(th),uminor.*sin.(th), "b--", label="ellipse")
+
+            th = LinRange(estart, estop, 100)
+            plot(umajor*cos.(th), uminor*sin.(th), "c-", label=@sprintf("arc[%3.3fmm]", ustrip(u"mm", int)))
+
+            legend()
+            title("ellipseArcLength()")
+            ax = gca()
+            ax.set_aspect("equal")
+            grid()
+
+        end
+
+        return uconvert(unit(radiusX), int) #return in given units
     end
 
 
