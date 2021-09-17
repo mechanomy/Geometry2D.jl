@@ -157,8 +157,8 @@ module Geometry2D
             #plot  givens
             th = LinRange(0, 2*pi, 500) 
             plot(umajor*cos.(th), umajor*sin.(th), "k:", label="major circle")
-            plot([0,cos(ustart)], [0,sin(ustart)], "go-", label=@sprintf("start[%3.3f°]", ustrip(u"°",start)))
-            plot([0,cos(ustop)], [0,sin(ustop)], "ro-", label=@sprintf("stop[%3.3f°]", ustrip(u"°",stop)))
+            plot(umajor.*[0,cos(ustart)], umajor.*[0,sin(ustart)], "go-", label=@sprintf("start[%3.3f°]", ustrip(u"°",start)))
+            plot(umajor.*[0,cos(ustop)], umajor.*[0,sin(ustop)], "ro-", label=@sprintf("stop[%3.3f°]", ustrip(u"°",stop)))
             plot(umajor*cos.(th),uminor.*sin.(th), "b--", label="ellipse")
 
             th = LinRange(estart, estop, 100)

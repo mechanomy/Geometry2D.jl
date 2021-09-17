@@ -96,7 +96,7 @@ function test_ellipseAngles()
   close("all")
   aStart = 10u"°"
   aStop = 30u"°"
-  rMajor = 1u"mm"
+  rMajor = 2u"mm"
   rMinor = 0.5u"mm"
   lArc = Geometry2D.ellipseArcLength(start=aStart, stop=aStop, radiusX=rMajor, radiusY=rMinor, showConstruction=true)
   println("lArc[$lArc]")
