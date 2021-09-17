@@ -108,7 +108,30 @@ module Geometry2D
     """
     function circular2EllipseAngle(; angle::Angle, radiusX::Unitful.Length, radiusY::Unitful.Length)
         #cf https://math.stackexchange.com/questions/433094/how-to-determine-the-arc-length-of-ellipse
-        return atan(radiusX/radiusY*tan(uconvert(u"rad",angle)))
+
+        #determine quadrant for wrapping tan()
+        quad=0
+        if 0 < angle
+            quad = floor(ustrip(u"rad", angle)/(pi/2) )
+        else
+            quad = ceil(ustrip(u"rad", angle)/(pi/2) ) #ceil since <0
+        end
+
+        #also need to choose major/minor by which quadrant we're in, visualize quad as rotating graph in 90 increments
+        major = 0
+        minor = 0
+        if quad%2 == 0
+            major = radiusX
+            minor = radiusY
+        end
+        if quad%2 == 1
+            major = radiusY
+            minor = radiusX
+        end
+        quad *= pi/2
+        engle = atan(major/minor*tan(uconvert(u"rad",angle)-quad)) #ellipse angle within the quadrant
+
+        return uconvert(unit(angle), engle + quad) #return in the given unit
     end
 
     """
@@ -130,26 +153,19 @@ module Geometry2D
         if radiusY < 0u"mm"
             throw(DomainError(radiusY, "ellipseArcLength(): radiusY axis length [$radiusY] should be positive"))
         end
-        # if stop < 0u"rad"
-        #     throw(DomainError(stop, "ellipseArcLength(): stop angle [$stop] should be positive"))
-        # end
-        # if start < 0u"rad"
-        #     throw(DomainError(start, "ellipseArcLength(): start angle [$start] should be positive"))
-        # end
 
         #cf https://math.stackexchange.com/questions/433094/how-to-determine-the-arc-length-of-ellipse
         estart = circular2EllipseAngle(angle=start, radiusX=radiusX, radiusY=radiusY) #the ellipse start angle
         estop = circular2EllipseAngle(angle=stop, radiusX=radiusX, radiusY=radiusY) #the ellipse stop angle
-        int,err = quadgk( t-> sqrt( (ustrip(u"mm",radiusX)*cos(t))^2 + (ustrip(u"mm",radiusY)*sin(t))^2 ), estart, estop, rtol=1e-8 ) #convert lengths to mm, integrate along the arc of the ellipse
-
-        int *= 1.0u"mm" #reapply units
+        int,err = quadgk( t-> sqrt( (ustrip(u"mm",radiusX)*cos(t))^2 + (ustrip(u"mm",radiusY)*sin(t))^2 ), ustrip(u"rad",estart), ustrip(u"rad",estop), rtol=1e-8 ) #convert lengths to mm, integrate along the arc of the ellipse
+        int = abs(int) * 1.0u"mm" #reapply units, length always positive
         if err > 1e-3
             println("ellipseSectorLength() had a large error term [$err], don't trust the length")
         end
 
         if showConstruction
-            umajor = ustrip(u"mm", radiusX)
-            uminor = ustrip(u"mm", radiusY)
+            umajor = ustrip(u"mm", max(radiusX, radiusY) )
+            uminor = ustrip(u"mm", min(radiusX, radiusY) )
             ustop = ustrip(u"rad", stop)
             ustart = ustrip(u"rad", start)
             fig = figure()
@@ -169,7 +185,6 @@ module Geometry2D
             ax = gca()
             ax.set_aspect("equal")
             grid()
-
         end
 
         return uconvert(unit(radiusX), int) #return in given units
