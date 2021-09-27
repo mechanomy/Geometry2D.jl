@@ -102,11 +102,10 @@ module Geometry2D
     function circleArcLength( angle::Angle, radius::Unitful.Length )
         return uconvert(u"rad", angle) * radius
     end
-
     """
-    Convert the circular `angle` into an 'ellipse' angle for the ellipse described by `radiusX` and `radiusY` axis lengths
+    Convert the elliptical `angle` into a cirular angle from the ellipse described by `radiusX` and `radiusY` axis lengths
     """
-    function circular2EllipseAngle(; angle::Angle, radiusX::Unitful.Length, radiusY::Unitful.Length)
+    function elliptical2CircularAngle(; angle::Angle, radiusX::Unitful.Length, radiusY::Unitful.Length)
         #cf https://math.stackexchange.com/questions/433094/how-to-determine-the-arc-length-of-ellipse
 
         #determine quadrant for wrapping tan()
@@ -130,6 +129,38 @@ module Geometry2D
         end
         quad *= pi/2
         engle = atan(major/minor*tan(uconvert(u"rad",angle)-quad)) #ellipse angle within the quadrant
+        # engle = atan(major/minor*tan(uconvert(u"rad",angle)-quad)) #ellipse angle within the quadrant
+
+        return uconvert(unit(angle), engle + quad) #return in the given unit
+    end
+    """
+    Convert the circular `angle` into an 'ellipse' angle for the ellipse described by `radiusX` and `radiusY` axis lengths
+    """
+    function circular2EllipticalAngle(; angle::Angle, radiusX::Unitful.Length, radiusY::Unitful.Length)
+        #cf https://math.stackexchange.com/questions/433094/how-to-determine-the-arc-length-of-ellipse
+
+        #determine quadrant for wrapping tan()
+        quad=0
+        if 0 < angle
+            quad = floor(ustrip(u"rad", angle)/(pi/2) )
+        else
+            quad = ceil(ustrip(u"rad", angle)/(pi/2) ) #ceil since <0
+        end
+
+        #also need to choose major/minor by which quadrant we're in, visualize quad as rotating graph in 90 increments
+        major = 0
+        minor = 0
+        if quad%2 == 0
+            major = radiusX
+            minor = radiusY
+        end
+        if quad%2 == 1
+            major = radiusY
+            minor = radiusX
+        end
+        quad *= pi/2
+        # engle = atan(major/minor*tan(uconvert(u"rad",angle)-quad)) #ellipse angle within the quadrant
+        engle = atan(minor/major*tan(uconvert(u"rad",angle)-quad)) #ellipse angle within the quadrant
 
         return uconvert(unit(angle), engle + quad) #return in the given unit
     end
@@ -155,8 +186,8 @@ module Geometry2D
         end
 
         #cf https://math.stackexchange.com/questions/433094/how-to-determine-the-arc-length-of-ellipse
-        estart = circular2EllipseAngle(angle=start, radiusX=radiusX, radiusY=radiusY) #the ellipse start angle
-        estop = circular2EllipseAngle(angle=stop, radiusX=radiusX, radiusY=radiusY) #the ellipse stop angle
+        estart = circular2EllipticalAngle(angle=start, radiusX=radiusX, radiusY=radiusY) #the ellipse start angle
+        estop = circular2EllipticalAngle(angle=stop, radiusX=radiusX, radiusY=radiusY) #the ellipse stop angle
         int,err = quadgk( t-> sqrt( (ustrip(u"mm",radiusX)*cos(t))^2 + (ustrip(u"mm",radiusY)*sin(t))^2 ), ustrip(u"rad",estart), ustrip(u"rad",estop), rtol=1e-8 ) #convert lengths to mm, integrate along the arc of the ellipse
         int = abs(int) * 1.0u"mm" #reapply units, length always positive
         if err > 1e-3

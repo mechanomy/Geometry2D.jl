@@ -27,16 +27,37 @@ end
   @test testVectorLengthAngle()
 end
 
+function test_circle2ellipseAngle_calc()
+  rx = 2u"mm"
+  ry = 1u"mm"
+  a30 = 30u"°"
+  e30 = Geometry2D.circular2EllipticalAngle(angle=a30, radiusX=rx, radiusY=ry)
+  c30 = Geometry2D.elliptical2CircularAngle(angle=e30, radiusX=rx, radiusY=ry)
+  # println("rx[$rx] ry[$ry] a30[$a30] e30[$e30] c30[$c30]")
+  return abs(a30 - c30) < 1e-5
+
+end
+
+function test_circle2ellipseAngle_calc90()
+  #circular and elliptical angles equal at 0 and 90s
+  rx = 2u"mm"
+  ry = 1u"mm"
+  a90 = Geometry2D.circular2EllipticalAngle(angle=90u"°", radiusX=rx, radiusY=ry)
+  a180 = Geometry2D.circular2EllipticalAngle(angle=180u"°", radiusX=rx, radiusY=ry)
+  a270 = Geometry2D.circular2EllipticalAngle(angle=270u"°", radiusX=rx, radiusY=ry)
+  a360 = Geometry2D.circular2EllipticalAngle(angle=360u"°", radiusX=rx, radiusY=ry)
+  return a90 == 90u"°" && a180 == 180u"°" && a270 == 270u"°" && a360 == 360u"°"
+end
 
 function test_circle2ellipseAngle_quadrants()
   rx = 1u"mm"
   ry = rx
-  q0 = Geometry2D.circular2EllipseAngle(angle=-0u"°"-11u"°", radiusX=rx, radiusY=ry)
-  q1 = Geometry2D.circular2EllipseAngle(angle=0u"°"+11u"°", radiusX=rx, radiusY=ry)
-  q2 = Geometry2D.circular2EllipseAngle(angle=90u"°"+11u"°", radiusX=rx, radiusY=ry)
-  q3 = Geometry2D.circular2EllipseAngle(angle=180u"°"+11u"°", radiusX=rx, radiusY=ry)
-  q4 = Geometry2D.circular2EllipseAngle(angle=270u"°"+11u"°", radiusX=rx, radiusY=ry)
-  q5 = Geometry2D.circular2EllipseAngle(angle=360u"°"+11u"°", radiusX=rx, radiusY=ry)
+  q0 = Geometry2D.circular2EllipticalAngle(angle=-0u"°"-11u"°", radiusX=rx, radiusY=ry)
+  q1 = Geometry2D.circular2EllipticalAngle(angle=0u"°"+11u"°", radiusX=rx, radiusY=ry)
+  q2 = Geometry2D.circular2EllipticalAngle(angle=90u"°"+11u"°", radiusX=rx, radiusY=ry)
+  q3 = Geometry2D.circular2EllipticalAngle(angle=180u"°"+11u"°", radiusX=rx, radiusY=ry)
+  q4 = Geometry2D.circular2EllipticalAngle(angle=270u"°"+11u"°", radiusX=rx, radiusY=ry)
+  q5 = Geometry2D.circular2EllipticalAngle(angle=360u"°"+11u"°", radiusX=rx, radiusY=ry)
   return q0 == -11u"°" && q1 == 11u"°" && q2 == 101u"°" && q3 == 191u"°" && q4 == 281u"°" && q5 == 371u"°"
 end
 
@@ -44,18 +65,20 @@ function test_circle2ellipseAngle_deltas()
   #the difference in angles should be constant
   rx = 2u"mm"
   ry = 1u"mm"
-  n010 = Geometry2D.circular2EllipseAngle(angle=-10u"°", radiusX=rx, radiusY=ry)
-  p020 = Geometry2D.circular2EllipseAngle(angle=20u"°", radiusX=rx, radiusY=ry)
-  p370 = Geometry2D.circular2EllipseAngle(angle=370u"°", radiusX=rx, radiusY=ry) 
-  n370 = Geometry2D.circular2EllipseAngle(angle=-370u"°", radiusX=rx, radiusY=ry) 
-  return (30u"°" - (p020-n010)) < 1e-3 && (740u"°" - (p370-n370)) < 1e-3
+  n010 = Geometry2D.circular2EllipticalAngle(angle=-10u"°", radiusX=rx, radiusY=ry)
+  p010 = Geometry2D.circular2EllipticalAngle(angle=10u"°", radiusX=rx, radiusY=ry)
+  p370 = Geometry2D.circular2EllipticalAngle(angle=370u"°", radiusX=rx, radiusY=ry) 
+  n370 = Geometry2D.circular2EllipticalAngle(angle=-370u"°", radiusX=rx, radiusY=ry) 
+
+  return (p010+n010) < 1e-3u"°" && (p370+n370) < 1e-3u"°"
 end
 
-@testset "test circle2ellipseAngle behavior" begin
+@testset "circular2EllipticalAngle() tests" begin
+  @test test_circle2ellipseAngle_calc()
+  @test test_circle2ellipseAngle_calc90()
   @test test_circle2ellipseAngle_quadrants()
   @test test_circle2ellipseAngle_deltas()
 end
-
 
 # when the major == minor, we have a circle and expect that the ellipse length == circle arc length
 function test_ellipseCircle()
