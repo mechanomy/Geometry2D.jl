@@ -195,7 +195,7 @@ module Geometry2D
         end
 
         if showConstruction
-            # umajor = ustrip(u"mm", max(radiusX, radiusY) )
+            # umajor = ustrip(u"mm", max(radiusX, radiusY) ) #angle is defined from X, so this can only mislead...
             # uminor = ustrip(u"mm", min(radiusX, radiusY) )
             umajor = ustrip(u"mm", radiusX)
             uminor = ustrip(u"mm", radiusY)
