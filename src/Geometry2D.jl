@@ -191,12 +191,14 @@ module Geometry2D
         int,err = quadgk( t-> sqrt( (ustrip(u"mm",radiusX)*cos(t))^2 + (ustrip(u"mm",radiusY)*sin(t))^2 ), ustrip(u"rad",estart), ustrip(u"rad",estop), rtol=1e-8 ) #convert lengths to mm, integrate along the arc of the ellipse
         int = abs(int) * 1.0u"mm" #reapply units, length always positive
         if err > 1e-3
-            println("ellipseSectorLength() had a large error term [$err], don't trust the length")
+            println("ellipseArcLength() had a large error term [$err], don't trust the length")
         end
 
         if showConstruction
-            umajor = ustrip(u"mm", max(radiusX, radiusY) )
-            uminor = ustrip(u"mm", min(radiusX, radiusY) )
+            # umajor = ustrip(u"mm", max(radiusX, radiusY) )
+            # uminor = ustrip(u"mm", min(radiusX, radiusY) )
+            umajor = ustrip(u"mm", radiusX)
+            uminor = ustrip(u"mm", radiusY)
             ustop = ustrip(u"rad", stop)
             ustart = ustrip(u"rad", start)
             fig = figure()
