@@ -27,7 +27,17 @@ end
   @test testVectorLengthAngle()
 end
 
-function test_circle2ellipseAngle_calc()
+function test_circle2ellipseAngle_approx()
+  rx = 2u"mm"
+  ry = 1u"mm"
+  a20 = Geometry2D.circular2EllipticalAngle(angle=20u"°", radiusX=rx, radiusY=ry) #10.31
+  a70 = Geometry2D.circular2EllipticalAngle(angle=70u"°", radiusX=rx, radiusY=ry) #53.
+  b20 = Geometry2D.circular2EllipticalAngle(angle=20u"°", radiusX=ry, radiusY=rx) #36.05
+  b70 = Geometry2D.circular2EllipticalAngle(angle=70u"°", radiusX=ry, radiusY=rx) #79.68
+  return a20 < b20 && a70 < b70
+end
+
+function test_circle2ellipseAngle_reversible()
   rx = 2u"mm"
   ry = 1u"mm"
   a30 = 30u"°"
@@ -35,7 +45,6 @@ function test_circle2ellipseAngle_calc()
   c30 = Geometry2D.elliptical2CircularAngle(angle=e30, radiusX=rx, radiusY=ry)
   # println("rx[$rx] ry[$ry] a30[$a30] e30[$e30] c30[$c30]")
   return abs(a30 - c30) < 1e-5
-
 end
 
 function test_circle2ellipseAngle_calc90()
@@ -74,7 +83,9 @@ function test_circle2ellipseAngle_deltas()
 end
 
 @testset "circular2EllipticalAngle() tests" begin
-  @test test_circle2ellipseAngle_calc()
+  #trying to avoid testing math but rather the function behavior
+  @test test_circle2ellipseAngle_approx()
+  @test test_circle2ellipseAngle_reversible()
   @test test_circle2ellipseAngle_calc90()
   @test test_circle2ellipseAngle_quadrants()
   @test test_circle2ellipseAngle_deltas()
