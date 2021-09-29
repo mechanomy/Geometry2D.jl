@@ -26,4 +26,3 @@ end
   @test testCircle()
   @test testVectorLengthAngle()
 end
-
