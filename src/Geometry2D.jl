@@ -5,7 +5,8 @@ module Geometry2D
     using PyPlot #can use matplotlib arguments directly
     using Printf
     using StaticArrays #for defined-length arrays: SVector{3,T}
-    using QuadGK #for numerical integration of ellipseArcLength
+    # using QuadGK #for numerical integration of ellipseArcLength
+    using ArbNumerics
 
     # using BPlot
 
@@ -159,6 +160,43 @@ module Geometry2D
             grid()
         end
         return legA * sin(angleCA)/sin(angleBC)
+    end
+
+
+    """
+    Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` through `angle` via elliptic integral:
+    L = b * elliptic_e( atan(a/b*tan(angle)), 1-a^2/b^2 )
+    """
+    function ellipticArcLength(a, b, angle )
+        # see: https://math.stackexchange.com/a/1123737/974011 
+
+        if a < 0
+            throw(DomainError(a, "major axis [$a] must be greater than 0"))
+        end
+        if b < 0
+            throw(DomainError(b, "minor axis [$b] must be greater than 0"))
+        end
+        if a < b
+            throw(DomainError(a, "major axis [$a] is smaller than minor axis [$b]"))
+        end
+        if pi/2 < angle
+            throw(DomainError(angle, "angle[$angle] should be less than pi/2"))
+        end
+        if angle < -pi/2
+            throw(DomainError(angle, "angle[$angle] should be greater than -pi/2"))
+        end
+
+        phi = atan( a/b*tan(angle))
+        m = 1 - (a/b)^2
+        return abs(b*elliptic_e( ArbReal(phi), ArbReal(m) ))
+    end
+    """
+    Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` between `star` and `stop`
+    """
+    function ellipticArcLength(a, b, start, stop)
+        lStart = ellipticArcLength(a,b, start)
+        lStop = ellipticArcLength(a,b, stop)
+        return lStop - lStart
     end
 
 

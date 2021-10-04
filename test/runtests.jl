@@ -26,3 +26,48 @@ end
   @test testCircle()
   @test testVectorLengthAngle()
 end
+
+
+function ellipticArcLength_singleAngle()
+  n60 = Geometry2D.ellipticArcLength( 50, 20, deg2rad(-60) )
+  n10 = Geometry2D.ellipticArcLength( 50, 20, deg2rad(-10) )
+  p10 = Geometry2D.ellipticArcLength( 50, 20, deg2rad( 10) )
+  p60 = Geometry2D.ellipticArcLength( 50, 20, deg2rad( 60) )
+  return n60 == p60 && n10 == p10
+end
+
+function ellipticArcLength_doubleAngle()
+  k5020 = 36.874554322338
+  k50020 = 99.072689284541
+  l5020 = Geometry2D.ellipticArcLength( 50, 20, deg2rad(10), deg2rad(60) )
+  l50020 = Geometry2D.ellipticArcLength( 500, 20, deg2rad(10), deg2rad(60) )
+  # return abs(k5020 - l5020)<1e-3 && abs(k50020 - l50020)<1e-3
+  return Geometry2D.eqTol(k5020, l5020, 1e-8) && Geometry2D.eqTol(k50020, l50020, 1e-8)
+end
+
+function ellipticArcLength_ba()
+  l5020 = Geometry2D.ellipticArcLength( 20, 50, deg2rad(10), deg2rad(60) )
+end
+function ellipticArcLength_nega()
+  l5020 = Geometry2D.ellipticArcLength( -20, 50, deg2rad(10), deg2rad(60) )
+end
+function ellipticArcLength_negb()
+  l5020 = Geometry2D.ellipticArcLength( 20, -50, deg2rad(10), deg2rad(60) )
+end
+function ellipticArcLength_200()
+  l5020 = Geometry2D.ellipticArcLength( 50, 20, deg2rad(200) )
+end
+function ellipticArcLength_n200()
+  l5020 = Geometry2D.ellipticArcLength( 50, 20, deg2rad(-200) )
+end
+
+
+@testset "ellipticArcLength" begin
+  @test ellipticArcLength_singleAngle()
+  @test ellipticArcLength_doubleAngle()
+  @test_throws DomainError ellipticArcLength_ba()
+  @test_throws DomainError ellipticArcLength_nega()
+  @test_throws DomainError ellipticArcLength_negb()
+  @test_throws DomainError ellipticArcLength_200()
+  @test_throws DomainError ellipticArcLength_n200()
+end
