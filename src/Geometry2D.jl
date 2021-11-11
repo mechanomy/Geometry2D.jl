@@ -249,15 +249,15 @@ module Geometry2D
         return [1 0 a; 0 1 0; 0 0 1]
     end
     function Tx(a::Unitful.Length)
-        return [1 0 0 ustrip(a); 0 1 0 0; 0 0 0 1]*unit(a)
+        return [1 0 ustrip(a); 0 1 0; 0 0 1]*unit(a)
     end
 
     """Create a 2D translation matrix translating along local y by <b>"""
     function Ty(b::Number)
-        return [1 0 0 0; 0 1 0 b; 0 0 0 1]
+        return [1 0 0; 0 1 b; 0 0 1]
     end
     function Ty(b::Unitful.Length)
-        return [1 0 0 0; 0 1 0 ustrip(b); 0 0 0 1]*unit(b)
+        return [1 0 0; 0 1 ustrip(b); 0 0 1]*unit(b)
     end
     # end
 # end

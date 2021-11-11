@@ -346,9 +346,9 @@ version = "1.9.1"
 
 [[Utility]]
 deps = ["Test", "Unitful"]
-git-tree-sha1 = "6541eb78f77ad6afdece119346a69437c466f08e"
+git-tree-sha1 = "1e4e355a8f698074c0556fabb5266fd8737c498f"
 repo-rev = "main"
-repo-url = "../Utility"
+repo-url = "/home/ben/sync/mechgits/library/julia/Utility"
 uuid = "fc763f5a-9b58-43fb-b3cf-046514c3f56f"
 version = "0.1.0"
 
