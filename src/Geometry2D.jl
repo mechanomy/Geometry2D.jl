@@ -59,10 +59,10 @@ module Geometry2D
         return atan(d[2],d[1])
     end
 
-    # returns true if a == b within tol, or abs(a)-abs(b) < tol
-    function eqTol(a::Number, b::Number, tol::Number=1e-3)
-        return abs(ustrip(a)-ustrip(b)) <= ustrip(tol)
-    end
+    # # returns true if a == b within tol, or abs(a)-abs(b) < tol
+    # function eqTol(a::Number, b::Number, tol::Number=1e-3)
+    #     return abs(ustrip(a)-ustrip(b)) <= ustrip(tol)
+    # end
 
     # isSegmentTangent(circleA, circleB, thA, thB) tests whether thA, thB define a segment tangent to the circle radii
     function isSegmentTangent( circleA::Circle, circleB::Circle, thA::Radian, thB::Radian, tol::Number=1e-3)
@@ -199,6 +199,68 @@ module Geometry2D
         return lStop - lStart
     end
 
+
+# classdef homogeneousTransformationMatrices
+#     methods (Static)
+        # % Rth = @(th)[cos(th),0,-sin(th); 0,1,0; sin(th),0,cos(th)]; %about x
+        # % Rps = @(ps)[cos(ps),sin(ps),0; -sin(ps),cos(ps),0; 0,1,0]; %about y
+        # % Rph = @(ph)[cos(ph),sin(ph),0; -sin(ph),cos(ph),0; 0,0,1]; %about z
+        # function H = Rx(a)
+        #     H = [1,0,0,0; 0,cos(a),-sin(a),0; 0,sin(a),cos(a),0; 0,0,0,1]; %rotation about x
+        # end
+        # function H = Ry(b)
+        #     H = [cos(b),0,sin(b),0; 0,1,0,0; -sin(b),0,cos(b),0; 0,0,0,1]; %about y
+        # end
+        # function H = Rz(c)
+        #     H = [cos(c),-sin(c),0,0; sin(c),cos(c),0,0; 0,0,1,0; 0,0,0,1]; %about z
+        # end
+        # function H = Tx(a)
+        #     H = [1,0,0,a; 0,1,0,0; 0,0,1,0; 0,0,0,1]; %translation along x
+        # end
+        # function H = Ty(b)
+        #     H = [1,0,0,0; 0,1,0,b; 0,0,1,0; 0,0,0,1]; %along y
+        # end
+        # function H = Tz(c)
+        #     H = [1,0,0,0; 0,1,0,0; 0,0,1,c; 0,0,0,1]; %along z
+        # end
+        
+        # function H = Rtk(th, k)
+        #     H = [ k(1)^2*(1-cos(th))+cos(th),         k(1)*k(2)*(1-cos(th))-k(3)*sin(th), k(1)*k(3)*(1-cos(th))+k(2)*sin(th), 0;... %the axis(k)&angle(th) tranformation matrix
+        #           k(1)*k(2)*(1-cos(th))+k(3)*sin(th), k(2)^2*(1-cos(th))+cos(th),         k(2)*k(3)*(1-cos(th))-k(1)*sin(th), 0;...
+        #           k(1)*k(3)*(1-cos(th))-k(2)*sin(th), k(2)*k(3)*(1-cos(th))+k(1)*sin(th), k(3)^2*(1-cos(th))+cos(th),         0; 0,0,0,1];
+        # end
+        
+    # %2D
+    """Make a 2D vector of <x>,<y>"""
+    function Vec(x::Number,y::Number)
+        return [x; y; 1]
+    end
+
+    """Create a 2D rotation matrix effecting a rotation of <angle>"""
+    function Rz(angle::Number)
+        return [cos(angle) -sin(angle) 0; sin(angle) cos(angle) 0; 0 0 1]
+    end
+    function Rz(angle::Angle)
+        return [cos(angle) -sin(angle) 0; sin(angle) cos(angle) 0; 0 0 1]
+    end
+
+    """Create a 2D translation matrix translating along local x by <a>"""
+    function Tx(a::Number)
+        return [1 0 a; 0 1 0; 0 0 1]
+    end
+    function Tx(a::Unitful.Length)
+        return [1 0 0 ustrip(a); 0 1 0 0; 0 0 0 1]*unit(a)
+    end
+
+    """Create a 2D translation matrix translating along local y by <b>"""
+    function Ty(b::Number)
+        return [1 0 0 0; 0 1 0 b; 0 0 0 1]
+    end
+    function Ty(b::Unitful.Length)
+        return [1 0 0 0; 0 1 0 ustrip(b); 0 0 0 1]*unit(b)
+    end
+    # end
+# end
 
 
 
