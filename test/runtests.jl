@@ -63,14 +63,27 @@ function ellipticArcLength_n200()
   l5020 = Geometry2D.ellipticArcLength( 50, 20, deg2rad(-200) )
 end
 
+function ellipticArcLength_units()
+  a = 3u"inch"
+  b = 10u"mm"
+  ang = 10u"°"
+  l = Geometry2D.ellipticArcLength(a,b,ang)
+
+  return Utility.eqTol( l, 1.2822u"inch" )
+end
+
 @testset "ellipticArcLength" begin
   @test ellipticArcLength_singleAngle()
   @test ellipticArcLength_doubleAngle()
+
   @test_throws DomainError ellipticArcLength_ba()
   @test_throws DomainError ellipticArcLength_nega()
   @test_throws DomainError ellipticArcLength_negb()
   @test_throws DomainError ellipticArcLength_200()
   @test_throws DomainError ellipticArcLength_n200()
+
+  @test ellipticArcLength_units()
+
 end
 
 
@@ -83,17 +96,25 @@ function testRotation()
   ret = Utility.eqTol(sq22, a45[1]) && Utility.eqTol(sq22, a45[2])
   return ret
 end
-#function test unitful translation
 function testTranslation()
   a = Geometry2D.Vec(1,0)
   tx = Geometry2D.Tx(1)
   ty = Geometry2D.Ty(1)
+  # ty = Ty(1)
   res = tx * ty * a
   return Utility.eqTol(res[1], 2) && Utility.eqTol(res[2], 1)
 end
-
-
 @testset "2D rotation and translation matrices" begin
   @test testRotation()
   @test testTranslation()
 end
+
+
+# function test_line()
+#   a = Geometry2D.Point(0,0)
+#   l = Geometry2D.line(a, )
+# end
+# @testset "line construct" begin
+#   @test test_line()
+
+# end

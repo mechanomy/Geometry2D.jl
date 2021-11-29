@@ -167,7 +167,7 @@ module Geometry2D
     Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` through `angle` via elliptic integral:
     L = b * elliptic_e( atan(a/b*tan(angle)), 1-a^2/b^2 )
     """
-    function ellipticArcLength(a, b, angle )
+    function ellipticArcLength(a::Number, b::Number, angle::Number )
         # see: https://math.stackexchange.com/a/1123737/974011 
 
         if a < 0
@@ -190,47 +190,25 @@ module Geometry2D
         m = 1 - (a/b)^2
         return abs(b*elliptic_e( ArbReal(phi), ArbReal(m) ))
     end
+
+    function ellipticArcLength(a::Unitful.Length, b::Unitful.Length, angle::Angle)
+        return ellipticArcLength( ustrip(unit(a), a), ustrip(unit(a), b), ustrip(u"rad", angle)) * unit(a)
+    end
+
     """
     Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` between `star` and `stop`
     """
-    function ellipticArcLength(a, b, start, stop)
+    function ellipticArcLength(a::Number, b::Number, start::Number, stop::Number)
         lStart = ellipticArcLength(a,b, start)
         lStop = ellipticArcLength(a,b, stop)
         return lStop - lStart
     end
 
 
-# classdef homogeneousTransformationMatrices
-#     methods (Static)
-        # % Rth = @(th)[cos(th),0,-sin(th); 0,1,0; sin(th),0,cos(th)]; %about x
-        # % Rps = @(ps)[cos(ps),sin(ps),0; -sin(ps),cos(ps),0; 0,1,0]; %about y
-        # % Rph = @(ph)[cos(ph),sin(ph),0; -sin(ph),cos(ph),0; 0,0,1]; %about z
-        # function H = Rx(a)
-        #     H = [1,0,0,0; 0,cos(a),-sin(a),0; 0,sin(a),cos(a),0; 0,0,0,1]; %rotation about x
-        # end
-        # function H = Ry(b)
-        #     H = [cos(b),0,sin(b),0; 0,1,0,0; -sin(b),0,cos(b),0; 0,0,0,1]; %about y
-        # end
-        # function H = Rz(c)
-        #     H = [cos(c),-sin(c),0,0; sin(c),cos(c),0,0; 0,0,1,0; 0,0,0,1]; %about z
-        # end
-        # function H = Tx(a)
-        #     H = [1,0,0,a; 0,1,0,0; 0,0,1,0; 0,0,0,1]; %translation along x
-        # end
-        # function H = Ty(b)
-        #     H = [1,0,0,0; 0,1,0,b; 0,0,1,0; 0,0,0,1]; %along y
-        # end
-        # function H = Tz(c)
-        #     H = [1,0,0,0; 0,1,0,0; 0,0,1,c; 0,0,0,1]; %along z
-        # end
-        
-        # function H = Rtk(th, k)
-        #     H = [ k(1)^2*(1-cos(th))+cos(th),         k(1)*k(2)*(1-cos(th))-k(3)*sin(th), k(1)*k(3)*(1-cos(th))+k(2)*sin(th), 0;... %the axis(k)&angle(th) tranformation matrix
-        #           k(1)*k(2)*(1-cos(th))+k(3)*sin(th), k(2)^2*(1-cos(th))+cos(th),         k(2)*k(3)*(1-cos(th))-k(1)*sin(th), 0;...
-        #           k(1)*k(3)*(1-cos(th))-k(2)*sin(th), k(2)*k(3)*(1-cos(th))+k(1)*sin(th), k(3)^2*(1-cos(th))+cos(th),         0; 0,0,0,1];
-        # end
-        
+
+       
     # %2D
+    # export Vec, Rz, Tx, Ty
     """Make a 2D vector of <x>,<y>"""
     function Vec(x::Number,y::Number)
         return [x; y; 1]
@@ -259,8 +237,26 @@ module Geometry2D
     function Ty(b::Unitful.Length)
         return [1 0 0; 0 1 ustrip(b); 0 0 1]*unit(b)
     end
+
+    #line(40, start00, e angle)
+    #make a conversion rule from Point to Point1? for easy use of Hs?
+    # function angle(a::Point, b::Point)
+    #     return atan(a.x-b.x, a.y-b.y) #make this a 360 axis reference..
     # end
-# end
+    # struct Line
+    #     a::Point
+    #     b::Point
+    #     angle::Angle
+    #     length::Number
+    # end
+    # Line(a::Point, b::Point) = Line(a,b,angle(a,b),length(a-b))
+    # function line(a::Point, length::Number, angle::Angle)::Line
+    #     return Line(a, a + length*Point(cos(angle),sin(angle)))
+    # end
+
+
+    # box = [], where box is a Vector of Points or Lines
+    # boxPrime = Rz * Tx * box
 
 
 

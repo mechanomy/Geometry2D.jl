@@ -103,9 +103,9 @@ uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 
 [[FLINT_jll]]
 deps = ["Artifacts", "GMP_jll", "JLLWrappers", "Libdl", "MPFR_jll", "Pkg"]
-git-tree-sha1 = "4edf855092ea28d1c34ffdf1052e5e2c9452cdf9"
+git-tree-sha1 = "3cf4b1d707da7721dea6139f8416edca83a4871c"
 uuid = "e134572f-a0d5-539d-bddf-3cad8db41a82"
-version = "200.800.301+0"
+version = "200.800.401+0"
 
 [[FixedPointNumbers]]
 deps = ["Statistics"]
@@ -340,13 +340,13 @@ uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 
 [[Unitful]]
 deps = ["ConstructionBase", "Dates", "LinearAlgebra", "Random"]
-git-tree-sha1 = "880f77d2cd4c6948e6bd55425b7b52f34dcd7f4b"
+git-tree-sha1 = "0992ed0c3ef66b0390e5752fe60054e5ff93b908"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
-version = "1.9.1"
+version = "1.9.2"
 
 [[Utility]]
 deps = ["Test", "Unitful"]
-git-tree-sha1 = "1e4e355a8f698074c0556fabb5266fd8737c498f"
+git-tree-sha1 = "9664ea273a0185682a59fd906973b1c72ded0ea6"
 repo-rev = "main"
 repo-url = "/home/ben/sync/mechgits/library/julia/Utility"
 uuid = "fc763f5a-9b58-43fb-b3cf-046514c3f56f"
