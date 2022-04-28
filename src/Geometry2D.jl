@@ -163,11 +163,13 @@ module Geometry2D
     end
 
 
+
     """
+    function ellipticArcLength(a::Number, b::Number, angle::Number )::Number
     Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` through `angle` via elliptic integral:
     L = b * elliptic_e( atan(a/b*tan(angle)), 1-a^2/b^2 )
     """
-    function ellipticArcLength(a::Number, b::Number, angle::Number )
+    function ellipticArcLength(a::Number, b::Number, angle::Number )::Number
         # see: https://math.stackexchange.com/a/1123737/974011 
 
         if a < 0
@@ -203,7 +205,6 @@ module Geometry2D
         lStop = ellipticArcLength(a,b, stop)
         return lStop - lStart
     end
-
 
 
        
