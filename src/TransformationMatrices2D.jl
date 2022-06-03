@@ -41,3 +41,40 @@ module TransformationMatrices2D
 
 
 end
+
+
+
+function testTransformatinMatrices2D()
+
+function testRotation()
+  # rotate ux by 45deg = 0.707;0.707
+  sq22 = sqrt(2)/2
+  a = Geometry2D.Vec(1,0)
+  rz = Geometry2D.Rz(deg2rad(45))
+  a45 = rz *a
+  ret = Utility.eqTol(sq22, a45[1]) && Utility.eqTol(sq22, a45[2])
+  return ret
+end
+function testTranslation()
+  a = Geometry2D.Vec(1,0)
+  tx = Geometry2D.Tx(1)
+  ty = Geometry2D.Ty(1)
+  # ty = Ty(1)
+  res = tx * ty * a
+  return Utility.eqTol(res[1], 2) && Utility.eqTol(res[2], 1)
+end
+@testset "2D rotation and translation matrices" begin
+  @test testRotation()
+  @test testTranslation()
+end
+
+
+# function test_line()
+#   a = Geometry2D.Point(0,0)
+#   l = Geometry2D.line(a, )
+# end
+# @testset "line construct" begin
+#   @test test_line()
+
+# end
+end
