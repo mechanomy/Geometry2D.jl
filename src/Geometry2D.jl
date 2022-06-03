@@ -1,12 +1,16 @@
 
 module Geometry2D
     using LinearAlgebra #for cross(), dot(), norm()
-    using Unitful
+    using Unitful, Unitful.DefaultSymbols
     using PyPlot #can use matplotlib arguments directly
     using Printf
     using StaticArrays #for defined-length arrays: SVector{3,T}
     # using QuadGK #for numerical integration of ellipseArcLength
     using ArbNumerics
+
+    include("Point2D.jl")
+    include("Circle2D.jl")
+    include("TransformationMatrices2D.jl")
 
     # using BPlot
 
@@ -20,25 +24,9 @@ module Geometry2D
     const uj = UnitVector([0,1,0])
     const uk = UnitVector([0,0,1])
 
-    struct Point
-        x::Unitful.Length
-        y::Unitful.Length
-    end
-
-    # A circle has a <center::Geometry2D.Point> and a <radius::Unitful.Length>
-    struct Circle
-        center::Point #[x,y] of the pulley center
-        radius::Unitful.Length
-    end
-
-    function plotCircle( circ::Circle, col )
-        th = range(0,2*pi,length=100)
-        x = ustrip(circ.center.x) .+ ustrip(circ.radius).*cos.(th)
-        y = ustrip(circ.center.y) .+ ustrip(circ.radius).*sin.(th)
-        plot(x,y, color=col, alpha=0.5 )
-    end
-
-    function vectorLengthAngle(length::Unitful.Length, angle::Radian)
+    """Returns a 2D vector from the `origin` along `angle` from global reference axis 'x' with magnitude `length`.
+    """
+    function vectorLengthAngle(length::Unitful.Length, angle::Radian) :: Vector{Unitful.Length}
         return length * [cos(angle); sin(angle); 0]
     end
     function normalize( vec ) #LinearAlgebra.normalize messes up the units..
@@ -47,25 +35,13 @@ module Geometry2D
     function length( vec )
         return norm(vec)
     end
-    function addPointVector(p::Point, v)
-        return Point(p.x + v[1], p.y+v[2])
-    end
-    function subtractPoints(a::Point, b::Point)
-        return [a.x - b.x; a.y-b.y; 0*a.x] # assume the units of a
-    end
-    #calculate the angle of the vector from a to b, as measured from 'horizontal'
-    function angleBetweenPoints(a::Point, b::Point)
-        d = subtractPoints(b,a)
-        return atan(d[2],d[1])
-    end
-
     # # returns true if a == b within tol, or abs(a)-abs(b) < tol
     # function eqTol(a::Number, b::Number, tol::Number=1e-3)
     #     return abs(ustrip(a)-ustrip(b)) <= ustrip(tol)
     # end
 
     # isSegmentTangent(circleA, circleB, thA, thB) tests whether thA, thB define a segment tangent to the circle radii
-    function isSegmentTangent( circleA::Circle, circleB::Circle, thA::Radian, thB::Radian, tol::Number=1e-3)
+    function isSegmentTangent( circleA::Circle2D.Circle, circleB::Circle2D.Circle, thA::Radian, thB::Radian, tol::Number=1e-3)
         rA = vectorLengthAngle(circleA.radius, thA)
         rB = vectorLengthAngle(circleB.radius, thB)
         uA = normalize(rA)
@@ -208,37 +184,6 @@ module Geometry2D
 
 
        
-    # %2D
-    # export Vec, Rz, Tx, Ty
-    """Make a 2D vector of <x>,<y>"""
-    function Vec(x::Number,y::Number)
-        return [x; y; 1]
-    end
-
-    """Create a 2D rotation matrix effecting a rotation of <angle>"""
-    function Rz(angle::Number)
-        return [cos(angle) -sin(angle) 0; sin(angle) cos(angle) 0; 0 0 1]
-    end
-    function Rz(angle::Angle)
-        return [cos(angle) -sin(angle) 0; sin(angle) cos(angle) 0; 0 0 1]
-    end
-
-    """Create a 2D translation matrix translating along local x by <a>"""
-    function Tx(a::Number)
-        return [1 0 a; 0 1 0; 0 0 1]
-    end
-    function Tx(a::Unitful.Length)
-        return [1 0 ustrip(a); 0 1 0; 0 0 1]*unit(a)
-    end
-
-    """Create a 2D translation matrix translating along local y by <b>"""
-    function Ty(b::Number)
-        return [1 0 0; 0 1 b; 0 0 1]
-    end
-    function Ty(b::Unitful.Length)
-        return [1 0 0; 0 1 ustrip(b); 0 0 1]*unit(b)
-    end
-
     #line(40, start00, e angle)
     #make a conversion rule from Point to Point1? for easy use of Hs?
     # function angle(a::Point, b::Point)
