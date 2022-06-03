@@ -2,6 +2,7 @@
 
 # Circle2D.jl is a member of Geometry2D.jl via the include()s listed there.
 
+using LinearAlgebra #for cross(), dot(), norm()
 
 """A circle has a `center` and a `radius`"""
 struct Circle

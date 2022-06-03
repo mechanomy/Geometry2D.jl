@@ -1,4 +1,6 @@
 
+using Pkg
+Pkg.activate( normpath(joinpath(@__DIR__, "..")) ) #activate this package
 
 include("../src/Geometry2D.jl")
 Geometry2D.testPoint2D()

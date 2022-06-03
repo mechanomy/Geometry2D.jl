@@ -6,7 +6,7 @@
 # """
 
 import Base.+, Base.-, Base.*, Base./, Base.isapprox
-import LinearAlgebra.norm
+import LinearAlgebra.norm, LinearAlgebra.normalize
 
 export Point, Delta
 
