@@ -14,40 +14,40 @@ end
 
 """Returns the Point on `c` at angle `a`"""
 function pointOnCircle( c::Circle, a::Angle ) :: Point
-    # """Returns a 2D vector from the `origin` along `angle` from global reference axis 'x' with magnitude `length`.
-    # """
-    # function vectorLengthAngle(length::Unitful.Length, angle::Radian) :: Vector{Unitful.Length}
-    #     return length * [cos(angle); sin(angle); 0]
-    # end
   return c.center + Delta(c.radius*cos(a), c.radius*sin(a))
 end
 
+function radialVector( c::Circle, a::Angle ) :: Vector
+  return Vector(origin=c.center, tip=pointOnCircle(c, a))
+end
 
-"""Given Circles `circleA` and `circleB`, tests whether points on their edge at angles `thA`, `thB` define a mutually tangent segment"""
-function isSegmentTangent( circleA::Circle, circleB::Circle, thA::Radian, thB::Radian, tol::Number=1e-3)
+"""Given Circles `circleA` and `circleB`, tests whether the points on their edge at circular angles `thA` and `thB` define a line segment tangent to both circles"""
+function isSegmentMutuallyTangent( circleA::Circle, circleB::Circle, thA::Radian, thB::Radian, tol::Number=1e-3)
     #define rA and rB from 0,0
-    rA = vectorLengthAngle(circleA.radius, thA) 
-    rB = vectorLengthAngle(circleB.radius, thB)
-    #get unit vectors
-    uA = normalize(rA)
-    uB = normalize(rB)
+    rvA = radialVector( circleA, thA ) 
+    rvB = radialVector( circleB, thB ) 
+    if rvA ≈ rvB
+      throw( ArgumentError("isSegmentTangent: The given points on cirlces are too close, A=[$rvA] vs B=[$rvB]"))
+    end
+    dA = delta( rvA )
+    dB = delta( rvB )
+    uA = UnitVector(dA)
+    uB = UnitVector(dB)
 
-    pA = addPointVector( circleA.center, rA )
-    pB = addPointVector( circleB.center, rB )
-    rSeg = subtractPoints(pA, pB)
-    uSeg = normalize(rSeg)
-    crossA = cross([ustrip(uA[1]), ustrip(uA[2]), ustrip(uA[3])], [ustrip(uSeg[1]),ustrip(uSeg[2]),ustrip(uSeg[3])])
-    crossB = cross([ustrip(uB[1]), ustrip(uB[2]), ustrip(uB[3])], [ustrip(uSeg[1]),ustrip(uSeg[2]),ustrip(uSeg[3])])
+    pA = circleA.center + dA
+    pB = circleB.center + dB
+    dSeg = pA-pB
+    uSeg = normalize(dSeg)
+    #cross product is a 3D concept but uA, uB, and uSeg lie in a plane, so add a z=0 to each:
+    crossA = cross([ustrip(uA.x), ustrip(uA.y), 0], [ustrip(uSeg.x),ustrip(uSeg.y), 0])
+    crossB = cross([ustrip(uB.x), ustrip(uB.y), 0], [ustrip(uSeg.x),ustrip(uSeg.y), 0])
 
     uk = [0;0;1]
     dotA = dot(crossA, uk)
     dotB = dot(crossB, uk)
-
-    return abs(1-abs(dotA) + 1-abs(dotB)) < ustrip(tol)
+    res = abs(1-abs(dotA) + 1-abs(dotB))
+    return res < ustrip(tol)
 end 
-
-
-
 
 
 # using PyPlot
@@ -70,7 +70,19 @@ function testCircle2D()
 
 
   @testset "Circle isSegmentTangent" begin
+    ca = Circle(Point(0m,0m), 1m)
+    aa = 90°
+    cb = Circle(Point(10m,0m), 1m)
+    ab = 90°
+    @test isSegmentMutuallyTangent(ca, cb, aa, ab)
 
+    cc = Circle(Point(10m,0m), 1m)
+    ac = -90°
+    @test !isSegmentMutuallyTangent(ca, cc, aa, ac)
+
+    c0 = Circle(Point(0m,0m), 1m) #null case
+    a0 = 90°
+    @test_throws ArgumentError isSegmentMutuallyTangent(ca, c0, aa, a0)
   end
 end #testCircle()
 

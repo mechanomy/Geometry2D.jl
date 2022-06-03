@@ -53,6 +53,18 @@ function (/)(p::Point, f::Number) :: Point
   return Point(x=p.x/f, y=p.y/f)
 end
 
+"""Divides `d` by the given factor `f`"""
+function (/)(d::Delta, f::Number) :: Delta
+  return Delta(dx=d.dx/f, dy=d.dy/f)
+  # return Delta(d.dx/f, d.dy/f)
+end
+
+#can't divide a delta by units and get a Delta, only a unitless magnitude...
+# function (/)(d::Delta, f::Unitful.Length) :: Delta
+#   return Delta(dx=d.dx/f, dy=d.dy/f)
+# end
+
+
 """Approximately compare Points `p` to `q`"""
 function isapprox(p::Point, q::Point; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
   return isapprox( ustrip(unit(p.x), p.x), ustrip(unit(p.x), q.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
@@ -101,6 +113,46 @@ function norm( d::Delta; p=2 ) ::Unitful.Length
   return norm( [d.dx, d.dy], p )
 end
 
+"""Approximately compare Deltas `a` to `b`"""
+function isapprox(a::Delta, b::Delta; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
+  return isapprox( ustrip(unit(a.dx), a.dx), ustrip(unit(a.dx), b.dx), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
+         isapprox( ustrip(unit(a.dx), a.dy), ustrip(unit(a.dx), b.dy), atol=atol, rtol=rtol)
+end
+
+
+
+#could use StaticArrays.jl to define fixed-length arrays, but this way I can enforce unit length at construction...
+"""A `UnitVector` type is unitless, expressing only relative magnitude"""
+struct UnitVector
+  x::Number
+  y::Number
+  #constructor with length check
+end
+UnitVector(dl::Delta) = normalize(dl)
+@kwdispatch UnitVector()
+@kwmethod UnitVector(; x::Number, y::Number) = UnitVector(x,y)
+
+# function UnitVector(dl::Delta) :: UnitVector
+#   u = normalize( dl )
+#   return UnitVector(u.x, u.y)
+# end
+
+"""Return a UnitVector for Delta `d`"""
+function normalize( d::Delta )::UnitVector  #I should create&use a UnitVector type here.  Again we want descriptivity in our libraries and tools..
+  nd = norm(d)
+  return UnitVector(d.dx/nd, d.dy/nd) #units cancel
+end
+
+"""Returns the `p`-norm length of `u`"""
+function length( u::UnitVector; p=2 ) :: Number
+  return norm(u, p=p)
+end
+"""Returns the `p`-norm of `u`"""
+function norm( u::UnitVector; p=2 ) :: Number
+  return norm( [u.x, u.y], p )
+end
+
+
 
 function testPoint2D()
 
@@ -108,48 +160,51 @@ function testPoint2D()
   # - Uniful conversions are correct
   # - assignments correct
   @testset "Point constructor" begin
-    p = Geometry2D.Point(1u"mm",2u"inch")
+    p = Point(1u"mm",2u"inch")
     @test p.x == 1e-3u"m" && p.y == 50.8u"mm"
 
-    p = Geometry2D.Point(x=1m,y=2m)
+    p = Point(x=1m,y=2m)
     @test p.x == 1m && p.y == 2m
   end
 
   @testset "Point operators" begin
-    pa = Geometry2D.Point(x=1m,y=2m)
-    d = Geometry2D.Delta(dx=3m,dy=4m)
+    pa = Point(x=1m,y=2m)
+    d = Delta(dx=3m,dy=4m)
     pb = pa+d
-    @test pb == Geometry2D.Point(4m, 6m)
+    @test pb == Point(4m, 6m)
     pc = pa-d
-    @test pc == Geometry2D.Point(-2m, -2m)
+    @test pc == Point(-2m, -2m)
     pd = pa*3
-    @test pd == Geometry2D.Point(3m, 6m)
+    @test pd == Point(3m, 6m)
     pe = pa/3
-    @test pe ≈ Geometry2D.Point( (1/3)*m, (2/3)*m )
+    @test pe ≈ Point( (1/3)*m, (2/3)*m )
 
-    @test Geometry2D.Point(x=1m,y=2m) ≈ Geometry2D.Point(x=1m,y=2m+1e-8m)# √eps=1e-8 or so
-    @test !(Geometry2D.Point(x=1m,y=2m) ≈ Geometry2D.Point(x=1m,y=2m+1e-7m)) 
+    @test Point(x=1m,y=2m) ≈ Point(x=1m,y=2m+1e-8m)# √eps=1e-8 or so
+    @test !(Point(x=1m,y=2m) ≈ Point(x=1m,y=2m+1e-7m)) 
   end
 
   @testset "Point functions" begin
-    pa = Geometry2D.Point(x=1m,y=2m)
-    pb = Geometry2D.Point(x=3m,y=4m)
-    @test Geometry2D.distance( pa, pb) == sqrt(8)*m
+    pa = Point(x=1m,y=2m)
+    pb = Point(x=3m,y=4m)
+    @test distance( pa, pb) == sqrt(8)*m
   end
 
   @testset "Delta operators" begin
-    pa = Geometry2D.Point(x=10m,y=20m)
-    pb = Geometry2D.Point(x=1m,y=2m)
+    pa = Point(x=10m,y=20m)
+    pb = Point(x=1m,y=2m)
     dl = pa-pb
     @test dl.dx == 9m && dl.dy == 18m 
   end
 
   @testset "Delta functions" begin
-    pa = Geometry2D.Point(x=10m,y=20m)
-    pb = Geometry2D.Point(x=1m,y=2m)
+    pa = Point(x=10m,y=20m)
+    pb = Point(x=1m,y=2m)
     dl = pa-pb
-    @test Geometry2D.length(dl) ≈ sqrt(9^2+18^2)*m
-    @test Geometry2D.norm(dl) ≈ sqrt(9^2+18^2)*m
+    @test length(dl) ≈ sqrt(9^2+18^2)*m
+    @test norm(dl) ≈ sqrt(9^2+18^2)*m
+
+    ua = normalize(pa-pb)
+    @test length(ua) ≈ 1
   end
 
 

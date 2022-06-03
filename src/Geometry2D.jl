@@ -15,9 +15,10 @@ using Test
     #
     include("Unitfuller.jl")
     include("Point2D.jl") #bring all of Point2D.jl into the Geometry2D module, Point2D.jl is not a module, just a file of lines
+    include("Vector2D.jl")
+    # include("TransformationMatrices2D.jl")
     include("Circle2D.jl")
     include("Ellipse2D.jl")
-    # include("TransformationMatrices2D.jl")
 
     # using BPlot
 
