@@ -17,16 +17,11 @@ using Test
     include("Point2D.jl") #bring all of Point2D.jl into the Geometry2D module, Point2D.jl is not a module, just a file of lines
     include("Vector2D.jl")
     include("Triangle2D.jl")
-    # include("TransformationMatrices2D.jl")
     include("Circle2D.jl")
     include("Ellipse2D.jl")
+    include("Transform2D.jl")
 
-    # using BPlot
 
-    # const UnitVector{T} = SVector{3,T}
-    # const ui = UnitVector([1,0,0])
-    # const uj = UnitVector([0,1,0])
-    # const uk = UnitVector([0,0,1])
 
 
     # function angleCorrect(angle::Radian)

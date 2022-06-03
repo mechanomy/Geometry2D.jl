@@ -17,9 +17,9 @@ function pointOnCircle( c::Circle, a::Angle ) :: Point
   return c.center + Delta(c.radius*cos(a), c.radius*sin(a))
 end
 
-"""Returns a Vector with origin at `c.center` and tip at angle `a` and `c.radius`"""
-function radialVector( c::Circle, a::Angle ) :: Vector
-  return Vector(origin=c.center, tip=pointOnCircle(c, a))
+"""Returns a Vector2D with origin at `c.center` and tip at angle `a` and `c.radius`"""
+function radialVector( c::Circle, a::Angle ) :: Vector2D
+  return Vector2D(origin=c.center, tip=pointOnCircle(c, a))
 end
 
 """Given Circles `circleA` and `circleB`, tests whether the points on their edge at circular angles `thA` and `thB` define a line segment tangent to both circles"""
@@ -32,7 +32,7 @@ end
 """Tests whether a segment connecting the tips of `a` and `b` is perpendicular to both which also implies pallelity of `a` and `b`.
 The calculation compares the direction of the cross products of `a` and the tip-connecting segment, and `b` and the segment, that these are within `tol` of each other.
 """
-function isSegmentPerpendicularToParallelVectors( vA::Vector, vB::Vector, tol::Number=1e-3)
+function isSegmentPerpendicularToParallelVectors( vA::Vector2D, vB::Vector2D, tol::Number=1e-3)
   if vA ≈ vB
     throw( ArgumentError("isSegmentTangent: The given points on cirlces are too close, A=[$vA] vs B=[$vB]"))
   end

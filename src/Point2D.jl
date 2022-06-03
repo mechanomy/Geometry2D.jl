@@ -58,7 +58,6 @@ function (/)(d::Delta, f::Number) :: Delta
   return Delta(dx=d.dx/f, dy=d.dy/f)
   # return Delta(d.dx/f, d.dy/f)
 end
-
 #can't divide a delta by units and get a Delta, only a unitless magnitude...
 # function (/)(d::Delta, f::Unitful.Length) :: Delta
 #   return Delta(dx=d.dx/f, dy=d.dy/f)
@@ -76,32 +75,10 @@ function distance(a::Point, b::Point )::Unitful.Length
   return length(a-b)
 end
 
-# """Provide addition between Points `a` and `b`"""
-# function addPointVector(p::Point2D.Point, v)
-#   return Point2D.Point(p.x + v[1], p.y+v[2])
-# end
-
-# function subtractPoints(a::Point2D.Point, b::Point2D.Point)
-#   return [a.x - b.x; a.y-b.y; 0*a.x] # assume the units of a
-# end
-
-# """Calculate the angle of the Delta from `a` to `b` relative to global x = horizontal"""
-# function angleBetweenPoints(a::Point2D.Point, b::Point2D.Point)
-#   return angle(a-b)
-# end
-
 """Calculate the angle of Delta `d` relative to global x = horizontal"""
 function angle(d::Delta)
   return atan(d.dy,d.dx) #this is atan2
 end
-
-# """Returns a 2D vector from the `origin` along `angle` from global reference axis 'x' with magnitude `length`."""
-# function vectorLengthAngle(length::Unitful.Length, angle::Radian) :: Vector{Unitful.Length}
-#   return length * [cos(angle); sin(angle); 0]
-# end
-# function normalize( vec ) #LinearAlgebra.normalize messes up the units..
-#   return vec / norm(vec)
-# end
 
 """Returns the 2-norm of `d`"""
 function length( d::Delta; p=2 )
@@ -132,13 +109,8 @@ UnitVector(dl::Delta) = normalize(dl)
 @kwdispatch UnitVector()
 @kwmethod UnitVector(; x::Number, y::Number) = UnitVector(x,y)
 
-# function UnitVector(dl::Delta) :: UnitVector
-#   u = normalize( dl )
-#   return UnitVector(u.x, u.y)
-# end
-
 """Return a UnitVector for Delta `d`"""
-function normalize( d::Delta )::UnitVector  #I should create&use a UnitVector type here.  Again we want descriptivity in our libraries and tools..
+function normalize( d::Delta )::UnitVector  #https://github.com/PainterQubits/Unitful.jl/issues/346
   nd = norm(d)
   return UnitVector(d.dx/nd, d.dy/nd) #units cancel
 end
@@ -151,8 +123,6 @@ end
 function norm( u::UnitVector; p=2 ) :: Number
   return norm( [u.x, u.y], p )
 end
-
-
 
 function testPoint2D()
 
