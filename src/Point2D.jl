@@ -11,7 +11,7 @@
 # This separation of concepts is a little cumbersome but makes very clear what is being modeled.
 # """
 
-import Base.+, Base.-, Base.*, Base./, Base.isapprox
+import Base.+, Base.-, Base.*, Base./, Base.isapprox, Base.length
 import LinearAlgebra.norm, LinearAlgebra.normalize
 
 export Point, Delta, distance, angle, length
@@ -86,8 +86,10 @@ function angle(d::Delta)
   return atan(d.dy,d.dx) #this is atan2
 end
 
-"""Returns the 2-norm of `d`"""
-function length( d::Delta; p=2 )
+"""
+`Base.length( d::Delta; p=2 ) :: Unitful.Length`
+Returns the 2-norm of `d`"""
+function Base.length( d::Delta; p=2 ) :: Unitful.Length
   return norm(d, p=p)
 end
 
@@ -116,16 +118,13 @@ UnitVector2D(dl::Delta) = normalize(dl)
 @kwdispatch UnitVector2D()
 @kwmethod UnitVector2D(; x::Real, y::Real) = UnitVector2D(x,y)
 
-"""Return a UnitVector2D for Delta `d`"""
+"""`normalize( d::Delta )::UnitVector2D`
+Return a UnitVector2D for Delta `d`"""
 function normalize( d::Delta )::UnitVector2D  #https://github.com/PainterQubits/Unitful.jl/issues/346
   nd = norm(d)
   return UnitVector2D(d.dx/nd, d.dy/nd) #units cancel
 end
 
-"""Returns the `p`-norm length of `u`"""
-function length( u::UnitVector2D; p=2 ) :: Real
-  return norm(u, p=p)
-end
 """Returns the `p`-norm of `u`"""
 function norm( u::UnitVector2D; p=2 ) :: Real
   return norm( [u.x, u.y], p )
@@ -177,11 +176,17 @@ function testPoint2D()
     pa = Point(x=10m,y=20m)
     pb = Point(x=1m,y=2m)
     dl = pa-pb
-    @test length(dl) ≈ sqrt(9^2+18^2)*m
     @test norm(dl) ≈ sqrt(9^2+18^2)*m
 
     ua = normalize(pa-pb)
-    @test length(ua) ≈ 1
+    @test norm(ua) ≈ 1
+  end
+
+  @testset "UnitVector2D" begin
+    ua = UnitVector2D(1,2) #constructor enforces unit length
+    @test norm(ua) ≈ 1 
+    ub = UnitVector2D(x=-1, y=1) #constructor enforces unit length
+    @test norm(ub) ≈ 1 
   end
 
 

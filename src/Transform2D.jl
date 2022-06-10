@@ -5,40 +5,26 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-export Rz, Tx, Ty, UnitVector, ui, uj, uk
-
-#these should properly be defined in a 3D package..
-# const UnitVector{T} = SVector{3,T}
-# const ui = UnitVector([1,0,0])
-# const uj = UnitVector([0,1,0])
-# const uk = UnitVector([0,0,1])
+export Rz, Tx, Ty, UnitVector, ui, uj, uk, length, norm
 
 """A `UnitVector` type is unitless, expressing only relative magnitude. It has fields `x`, `y`, and `z`"""
 struct UnitVector
   x::Real
   y::Real
   z::Real
+  UnitVector(x::Real, y::Real, z::Real) = new(x/norm([x,y,z]), y/norm([x,y,z]), z/norm([x,y,z]))
 end
-# UnitVector(x::Real, y::Real, z::Real) = 
-# @kwdispatch UnitVector2D()
-# @kwmethod UnitVector2D(; x::Real, y::Real) = UnitVector2D(x,y)
+UnitVector(vec::AbstractVector) = UnitVector(vec[1], vec[2], vec[3])
+@kwdispatch UnitVector()
+@kwmethod UnitVector(; x::Real, y::Real, z::Real) = UnitVector(x,y,z)
 
-# """Return a UnitVector in the same direction as `vec`"""
-# function normalize( vec::AbstractVector )::UnitVector 
-#   nd = norm(vec)
-#   return UnitVector2D(d.dx/nd, d.dy/nd) #units cancel
-# end
+const ui = UnitVector([1,0,0])
+const uj = UnitVector([0,1,0])
+const uk = UnitVector([0,0,1])
 
-# """Returns the `p`-norm length of `u`"""
-# function length( u::UnitVector2D; p=2 ) :: Real
-#   return norm(u, p=p)
-# end
-# """Returns the `p`-norm of `u`"""
-# function norm( u::UnitVector2D; p=2 ) :: Real
-#   return norm( [u.x, u.y], p )
-# end
-
-
+function norm( uv::UnitVector; p=2 ) :: Real
+  return norm([uv.x,uv.y,uv.z], p)
+end
 
 
 """Make a 2D Vector2D of <x>,<y>"""
@@ -81,15 +67,10 @@ end
 
 
 function testTransform2D()
-  @testset "UnitVector2D" begin
-    ua = UnitVector2D(1,2)
-    @test length(ua) ≈ 1
+  @testset "UnitVector" begin
+    ua = UnitVector(1,2,3)
+    @test norm(ua) ≈ 1
   end
-
-  # @testset "UnitVector" begin
-  #   ua = UnitVector(1,2,3)
-
-  # end
 
   @testset "Rotation" begin
     p = Point(1m, 0m)
