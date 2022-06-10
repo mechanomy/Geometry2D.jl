@@ -18,6 +18,9 @@ UnitVector(vec::AbstractVector) = UnitVector(vec[1], vec[2], vec[3])
 @kwdispatch UnitVector()
 @kwmethod UnitVector(; x::Real, y::Real, z::Real) = UnitVector(x,y,z)
 
+
+
+
 const ui = UnitVector([1,0,0])
 const uj = UnitVector([0,1,0])
 const uk = UnitVector([0,0,1])
@@ -25,6 +28,25 @@ const uk = UnitVector([0,0,1])
 function norm( uv::UnitVector; p=2 ) :: Real
   return norm([uv.x,uv.y,uv.z], p)
 end
+
+
+
+# import Base.+, Base.-, Base.*, Base./, Base.isapprox
+
+"""
+`(-)(a::Real, uv::UnitVector) :: UnitVector` Provides negation of UnitVectors
+"""
+function (-)(uv::UnitVector) :: UnitVector
+  return UnitVector(-uv.x, -uv.y, -uv.z)
+end
+
+# """
+# `(*)(a::Real, uv::UnitVector) :: UnitVector`
+# Multiplication: `a`*`uv`
+# """
+# function (*)(a::Real, uv::UnitVector) :: UnitVector
+#   return UnitVector(a*uv.x, a*uv.y, a*uv.z)
+# end
 
 
 """Make a 2D Vector2D of <x>,<y>"""
@@ -70,6 +92,9 @@ function testTransform2D()
   @testset "UnitVector" begin
     ua = UnitVector(1,2,3)
     @test norm(ua) ≈ 1
+    @test norm(-ua) ≈ 1
+    ub = -ua
+    @test ub.x == -ua.x
   end
 
   @testset "Rotation" begin

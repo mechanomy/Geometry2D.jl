@@ -11,7 +11,7 @@
 # This separation of concepts is a little cumbersome but makes very clear what is being modeled.
 # """
 
-import Base.+, Base.-, Base.*, Base./, Base.isapprox, Base.length
+import Base.+, Base.-, Base.*, Base./, Base.isapprox
 import LinearAlgebra.norm, LinearAlgebra.normalize
 
 export Point, Delta, distance, angle, length
