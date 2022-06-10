@@ -48,6 +48,15 @@ end
 #   return UnitVector(a*uv.x, a*uv.y, a*uv.z)
 # end
 
+"""Approximately compare UnitVectors `a` to `b`"""
+function isapprox(a::UnitVector, b::UnitVector; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
+  return isapprox( ustrip(unit(a.x), a.x), ustrip(unit(a.x), b.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
+         isapprox( ustrip(unit(a.x), a.y), ustrip(unit(a.x), b.y), atol=atol, rtol=rtol) && 
+         isapprox( ustrip(unit(a.x), a.z), ustrip(unit(a.x), b.z), atol=atol, rtol=rtol)
+end
+
+
+
 
 """Make a 2D Vector2D of <x>,<y>"""
 function point2vec(p::Point)
@@ -95,6 +104,11 @@ function testTransform2D()
     @test norm(-ua) ≈ 1
     ub = -ua
     @test ub.x == -ua.x
+
+    @test isapprox(ua,ub) == false
+    uc = UnitVector(1+1e-5,2,3)
+    @test isapprox(ua,uc, rtol=1e-3) 
+
   end
 
   @testset "Rotation" begin
