@@ -15,6 +15,7 @@ Geometry2D.testTriangle2D()
 Geometry2D.testCircle2D()
 Geometry2D.testEllipse2D()
 Geometry2D.testTransform2D()
+Geometry2D.testUnitfuller()
 
 
 ; #don't return the last thing

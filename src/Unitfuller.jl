@@ -11,4 +11,33 @@
 # @unit deg "deg" Degree 360/2*pi false
 Angle{T} = Union{Quantity{T,NoDims,typeof(u"rad")}, Quantity{T,NoDims,typeof(u"°")}} where T
 
+ 
+"""`angleWrap(angle::Radian) :: Radian`
+Wraps `angle` between 0 and 2π.
+"""
+function angleWrap(angle::Radian)
+  return (ustrip(u"rad", angle) + 2*pi)%(2*pi) * 1.0u"rad"
+end
 
+"""`angleWrap(angle::Real) :: Real`
+Wraps `angle` between 0 and 2π.
+"""
+function angleWrap(angle::Real) :: Real
+  return (angle + 2*pi)%(2*pi)
+end
+
+
+function testUnitfuller()
+  @testset "angleCorrect" begin
+    @test angleWrap(-7rad) ≈ 2*π-7
+    @test angleWrap(-1rad) ≈ 2*π-1
+    @test angleWrap(1rad) ≈ 1
+    @test angleWrap(7rad) ≈ 7-2*π
+
+    @test angleWrap(-7) ≈ 2*π-7
+    @test angleWrap(-1) ≈ 2*π-1
+    @test angleWrap(1) ≈ 1
+    @test angleWrap(7) ≈ 7-2*π
+  end
+
+end
