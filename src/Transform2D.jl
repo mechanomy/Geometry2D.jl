@@ -55,6 +55,10 @@ function isapprox(a::UnitVector, b::UnitVector; atol=0, rtol=√eps()) :: Bool #
          isapprox( ustrip(unit(a.x), a.z), ustrip(unit(a.x), b.z), atol=atol, rtol=rtol)
 end
 
+function toVector( uv::UnitVector ) :: AbstractVector
+  return [uv.x, uv.y, uv.z]
+end
+
 
 
 
