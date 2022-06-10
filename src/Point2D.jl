@@ -51,16 +51,16 @@ function (-)(p::Point, d::Delta) :: Point
 end
 
 """Multiplies `p` by the given factor `f`"""
-function (*)(p::Point, f::Number) :: Point
+function (*)(p::Point, f::Real) :: Point
   return Point(x=p.x*f, y=p.y*f)
 end
 """Divides `p` by the given factor `f`"""
-function (/)(p::Point, f::Number) :: Point
+function (/)(p::Point, f::Real) :: Point
   return Point(x=p.x/f, y=p.y/f)
 end
 
 """Divides `d` by the given factor `f`"""
-function (/)(d::Delta, f::Number) :: Delta
+function (/)(d::Delta, f::Real) :: Delta
   return Delta(dx=d.dx/f, dy=d.dy/f)
   # return Delta(d.dx/f, d.dy/f)
 end
@@ -107,13 +107,14 @@ end
 #I could use StaticArrays.jl to define fixed-length arrays, but this way I can enforce unit length at construction...
 """A `UnitVector2D` type is unitless, expressing only relative magnitude. It has fields `x` and `y`"""
 struct UnitVector2D
-  x::Number
-  y::Number
-  #constructor with length check
+  x::Real
+  y::Real
+  #constructor with length enforcement 
+  UnitVector2D(x::Real, y::Real) = new(x/norm([x,y]), y/norm([x,y]))
 end
 UnitVector2D(dl::Delta) = normalize(dl)
 @kwdispatch UnitVector2D()
-@kwmethod UnitVector2D(; x::Number, y::Number) = UnitVector2D(x,y)
+@kwmethod UnitVector2D(; x::Real, y::Real) = UnitVector2D(x,y)
 
 """Return a UnitVector2D for Delta `d`"""
 function normalize( d::Delta )::UnitVector2D  #https://github.com/PainterQubits/Unitful.jl/issues/346
@@ -122,11 +123,11 @@ function normalize( d::Delta )::UnitVector2D  #https://github.com/PainterQubits/
 end
 
 """Returns the `p`-norm length of `u`"""
-function length( u::UnitVector2D; p=2 ) :: Number
+function length( u::UnitVector2D; p=2 ) :: Real
   return norm(u, p=p)
 end
 """Returns the `p`-norm of `u`"""
-function norm( u::UnitVector2D; p=2 ) :: Number
+function norm( u::UnitVector2D; p=2 ) :: Real
   return norm( [u.x, u.y], p )
 end
 
