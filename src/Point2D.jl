@@ -25,6 +25,7 @@ end
 @kwmethod Point(;x::Unitful.Length, y::Unitful.Length) = Point(x,y)
 # @kwmethod Point(refrenceFrame; x::Unitful.Length, y::Unitful.Length) = Point(x,y) # maybe introduce multiple reference frames...later; looking at you CadQuery
 
+
 """A difference between two points on the cartesian plane, measured in `dx` and `dy` from the plane's origin.
 This is introduced as a separate type to avoid using Vector{}s with undetermined lengths.
 """
@@ -70,15 +71,9 @@ end
 # end
 
 
-"""Approximately compare Points `p` to `q`"""
-function isapprox(p::Point, q::Point; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
-  return isapprox( ustrip(unit(p.x), p.x), ustrip(unit(p.x), q.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
-          isapprox( ustrip(unit(p.x), p.y), ustrip(unit(p.x), q.y), atol=atol, rtol=rtol)
-end
-
 """Finds the straight-line distance between `a` and `b`"""
 function distance(a::Point, b::Point )::Unitful.Length
-  return length(a-b)
+  return norm(a-b)
 end
 
 """Calculate the angle of Delta `d` relative to global x = horizontal"""
@@ -86,16 +81,31 @@ function angle(d::Delta)
   return atan(d.dy,d.dx) #this is atan2
 end
 
+# """
+# `Base.length( d::Delta; p=2 ) :: Unitful.Length`
+# Returns the 2-norm of `d`"""
+# function Base.length( d::Delta; p=2 ) :: Unitful.Length
+#   return norm(d, p=p)
+# end
+
 """
-`Base.length( d::Delta; p=2 ) :: Unitful.Length`
-Returns the 2-norm of `d`"""
-function Base.length( d::Delta; p=2 ) :: Unitful.Length
-  return norm(d, p=p)
+`norm( pt::Point; p=2 ) :: Unitful.Length`
+Returns the `p`-norm of `pt`"""
+function norm( pt::Point; p=2 ) :: Unitful.Length
+  return norm( [pt.x, pt.y], p )
 end
 
-"""Returns the 2-norm of `d`"""
+"""
+`norm( d::Delta; p=2 ) :: Unitful.Length`
+Returns the `p`-norm of `d`"""
 function norm( d::Delta; p=2 ) ::Unitful.Length
   return norm( [d.dx, d.dy], p )
+end
+
+"""Approximately compare Points `p` to `q`"""
+function isapprox(p::Point, q::Point; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
+  return isapprox( ustrip(unit(p.x), p.x), ustrip(unit(p.x), q.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
+          isapprox( ustrip(unit(p.x), p.y), ustrip(unit(p.x), q.y), atol=atol, rtol=rtol)
 end
 
 """Approximately compare Deltas `a` to `b`"""
@@ -117,6 +127,13 @@ end
 UnitVector2D(dl::Delta) = normalize(dl)
 @kwdispatch UnitVector2D()
 @kwmethod UnitVector2D(; x::Real, y::Real) = UnitVector2D(x,y)
+
+"""`normalize( p::Point )::UnitVector2D`
+Return a UnitVector2D pointing toward Point `p`"""
+function normalize( p::Point )::UnitVector2D 
+  np = norm(p)
+  return UnitVector2D(p.x/np, p.y/np) #units cancel
+end
 
 """`normalize( d::Delta )::UnitVector2D`
 Return a UnitVector2D for Delta `d`"""
@@ -157,12 +174,20 @@ function testPoint2D()
 
     @test Point(x=1m,y=2m) ≈ Point(x=1m,y=2m+1e-8m)# √eps=1e-8 or so
     @test !(Point(x=1m,y=2m) ≈ Point(x=1m,y=2m+1e-7m)) 
+
+    @test norm(pa) ≈ sqrt(5)*m
   end
 
   @testset "Point functions" begin
     pa = Point(x=1m,y=2m)
     pb = Point(x=3m,y=4m)
     @test distance( pa, pb) == sqrt(8)*m
+
+    @test isapprox(pa,pb) == false
+
+    ua = normalize(pa)
+    @test ua.x ≈ 1/sqrt(5)
+    @test ua.y ≈ 2/sqrt(5)
   end
 
   @testset "Delta operators" begin
