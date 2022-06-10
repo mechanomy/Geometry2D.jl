@@ -147,6 +147,12 @@ function norm( u::UnitVector2D; p=2 ) :: Real
   return norm( [u.x, u.y], p )
 end
 
+"""Approximately compare Deltas `a` to `b`"""
+function isapprox(a::UnitVector2D, b::UnitVector2D; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
+  return isapprox( ustrip(unit(a.x), a.x), ustrip(unit(a.x), b.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
+         isapprox( ustrip(unit(a.x), a.y), ustrip(unit(a.x), b.y), atol=atol, rtol=rtol)
+end
+
 function testPoint2D()
 
   # test rationale:
@@ -212,6 +218,10 @@ function testPoint2D()
     @test norm(ua) ≈ 1 
     ub = UnitVector2D(x=-1, y=1) #constructor enforces unit length
     @test norm(ub) ≈ 1 
+
+    @test isapprox(ua, ub) == false
+    uc = UnitVector2D(1+1e-5,2) #constructor enforces unit length
+    @test isapprox(ua, uc, rtol=1e-3) == true
   end
 
 
