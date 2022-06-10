@@ -104,29 +104,29 @@ end
 
 
 
-#could use StaticArrays.jl to define fixed-length arrays, but this way I can enforce unit length at construction...
-"""A `UnitVector` type is unitless, expressing only relative magnitude"""
-struct UnitVector
+#I could use StaticArrays.jl to define fixed-length arrays, but this way I can enforce unit length at construction...
+"""A `UnitVector2D` type is unitless, expressing only relative magnitude. It has fields `x` and `y`"""
+struct UnitVector2D
   x::Number
   y::Number
   #constructor with length check
 end
-UnitVector(dl::Delta) = normalize(dl)
-@kwdispatch UnitVector()
-@kwmethod UnitVector(; x::Number, y::Number) = UnitVector(x,y)
+UnitVector2D(dl::Delta) = normalize(dl)
+@kwdispatch UnitVector2D()
+@kwmethod UnitVector2D(; x::Number, y::Number) = UnitVector2D(x,y)
 
-"""Return a UnitVector for Delta `d`"""
-function normalize( d::Delta )::UnitVector  #https://github.com/PainterQubits/Unitful.jl/issues/346
+"""Return a UnitVector2D for Delta `d`"""
+function normalize( d::Delta )::UnitVector2D  #https://github.com/PainterQubits/Unitful.jl/issues/346
   nd = norm(d)
-  return UnitVector(d.dx/nd, d.dy/nd) #units cancel
+  return UnitVector2D(d.dx/nd, d.dy/nd) #units cancel
 end
 
 """Returns the `p`-norm length of `u`"""
-function length( u::UnitVector; p=2 ) :: Number
+function length( u::UnitVector2D; p=2 ) :: Number
   return norm(u, p=p)
 end
 """Returns the `p`-norm of `u`"""
-function norm( u::UnitVector; p=2 ) :: Number
+function norm( u::UnitVector2D; p=2 ) :: Number
   return norm( [u.x, u.y], p )
 end
 

@@ -6,11 +6,13 @@
 
 
 
+using StaticArrays
 
-# const UnitVector{T} = SVector{3,T}
-# const ui = UnitVector([1,0,0])
-# const uj = UnitVector([0,1,0])
-# const uk = UnitVector([0,0,1])
+#these should properly be defined in a 3D package..
+const UnitVector{T} = SVector{3,T}
+const ui = UnitVector([1,0,0])
+const uj = UnitVector([0,1,0])
+const uk = UnitVector([0,0,1])
 
 export Rz, Tx, Ty
 

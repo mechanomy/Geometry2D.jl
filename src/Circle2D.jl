@@ -45,8 +45,8 @@ function isSegmentPerpendicularToParallelVectors( vA::Vector2D, vB::Vector2D, to
   end
   dA = delta( vA )
   dB = delta( vB )
-  uA = UnitVector(dA)
-  uB = UnitVector(dB)
+  uA = UnitVector2D(dA) #this could be normalize() to remove UnitVector2D..
+  uB = UnitVector2D(dB)
 
   pA = vA.origin + dA
   pB = vB.origin + dB
