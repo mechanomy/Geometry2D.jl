@@ -14,7 +14,7 @@
 import Base.+, Base.-, Base.*, Base./, Base.isapprox
 import LinearAlgebra.norm, LinearAlgebra.normalize
 
-export Point, Delta
+export Point, Delta, distance, angle, length
 
 """A point on the cartesian plane, measured in `x` and `y` from the plane's origin"""
 struct Point
