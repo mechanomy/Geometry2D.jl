@@ -9,13 +9,41 @@ using Pkg
 Pkg.activate( normpath(joinpath(@__DIR__, "..")) ) #activate this package
 
 include("../src/Geometry2D.jl")
-Geometry2D.testPoint2D()
+Geometry2D.testPoint2D() #draws a gr()
 Geometry2D.testVector2D()
 Geometry2D.testTriangle2D()
-Geometry2D.testCircle2D()
+Geometry2D.testCircle2D() #draws a gr()
 Geometry2D.testEllipse2D()
 Geometry2D.testTransform2D()
 Geometry2D.testUnitfuller()
 
 
+
+# using Unitful, Unitful.DefaultSymbols
+# using Test
+# using Plots
+#   # re testing plots, https://discourse.julialang.org/t/how-to-test-plot-recipes/2648/4
+#   @testset "Circle plotRecipe" begin
+#     # pyplot()
+#     gr()
+#     c = Circle(1mm,2mm,3mm)
+#     p = plot(c)
+#     c = Circle(1mm,2mm,4mm)
+#     p = plot!(c, linecolor=:red)
+#     #pyplot:
+#     # display(p) #display not configured for pyplot()
+#     # show(p) #pyplot() doesn't show
+#     #gr():
+#     #  no plot by default
+#     display(p) #produces a correct gk plot window
+#     # show(p) #doesn't show
+
+#     @test true
+#   end
+
+
+
+
+
+  
 ; #don't return the last thing

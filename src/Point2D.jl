@@ -25,6 +25,27 @@ end
 @kwmethod Point(;x::Unitful.Length, y::Unitful.Length) = Point(x,y)
 # @kwmethod Point(refrenceFrame; x::Unitful.Length, y::Unitful.Length) = Point(x,y) # maybe introduce multiple reference frames...later; looking at you CadQuery
 
+"""
+A plot recipe for plotting Points under Plots.jl.
+```
+p = Point( 3mm,4mm )
+plot(p)
+```
+"""
+@recipe function plotRecipe(point::Point)
+  # seriestype := :path # turns seriestype := :path into plotattributes[:seriestype] = :path, forcing that attribute value
+  # th = LinRange(0,2*π, 100)
+  # # x = ustrip(axisUnit, circle.center.x) .+ ustrip(axisUnit, circle.radius) .* cos.(th) #w/o UnitfulRecipes
+  # # y = ustrip(axisUnit, circle.center.y) .+ ustrip(axisUnit, circle.radius) .* sin.(th)
+  # x = circle.center.x .+ circle.radius .* cos.(th) #wit UnitfulRecipes, applies a unit label to the axes
+  # y = circle.center.y .+ circle.radius .* sin.(th)
+  # point.x, point.y #return the data
+  markershape --> :circle
+  [ustrip(point.x)], [ustrip(point.y)] #return the data
+end
+
+
+
 
 """A difference between two points on the cartesian plane, measured in `dx` and `dy` from the plane's origin.
 This is introduced as a separate type to avoid using Vector{}s with undetermined lengths.
@@ -194,6 +215,16 @@ function testPoint2D()
     ua = normalize(pa)
     @test ua.x ≈ 1/sqrt(5)
     @test ua.y ≈ 2/sqrt(5)
+  end
+
+  @testset "Point recipe" begin
+    pt = Point(1mm,2mm)
+    p = plot(pt, reuse=false)
+    p = plot!( Point(1mm,3mm), color=:red )
+    p = plot!( Point(2mm,3mm), markersize=10)
+    p = plot!( Point(3mm,3mm), markershape=:diamond)
+    display(p) #make gr() draw a window
+ 
   end
 
   @testset "Delta operators" begin

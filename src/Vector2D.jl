@@ -13,6 +13,11 @@ end
 @kwdispatch Vector2D()
 @kwmethod Vector2D(;origin::Point, tip::Point) = Vector2D(origin, tip)
 
+
+
+
+
+
 function delta(v::Vector2D) :: Delta
   return v.tip - v.origin
 end
@@ -20,6 +25,11 @@ end
 """Calculate the angle of Delta `d` relative to global x = horizontal"""
 function angle(v::Vector2D)
   return angle(delta(v))
+end
+
+"""Approximately compare Vectors `a` to `b`"""
+function isapprox(a::Vector2D, b::Vector2D; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
+  return isapprox(a.origin, b.origin, atol=atol, rtol=rtol) && isapprox(a.tip, b.tip, atol=atol, rtol=rtol) 
 end
 
 function testVector2D()
@@ -43,10 +53,5 @@ function testVector2D()
     @test angle(Vector2D(po,pt)) == -135°
     # @test angle(Vector2D(po,pt)) == 225°
   end
-end
 
-"""Approximately compare Vectors `a` to `b`"""
-function isapprox(a::Vector2D, b::Vector2D; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
-  return isapprox(a.origin, b.origin, atol=atol, rtol=rtol) && isapprox(a.tip, b.tip, atol=atol, rtol=rtol) 
 end
-

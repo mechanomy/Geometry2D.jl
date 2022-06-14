@@ -5,6 +5,8 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
+import LinearAlgebra.norm
+
 export Rz, Tx, Ty, UnitVector, ui, uj, uk, length, norm
 
 """A `UnitVector` type is unitless, expressing only relative magnitude. It has fields `x`, `y`, and `z`"""
@@ -21,9 +23,9 @@ UnitVector(vec::AbstractVector) = UnitVector(vec[1], vec[2], vec[3])
 
 
 
-const ui = UnitVector([1,0,0])
-const uj = UnitVector([0,1,0])
-const uk = UnitVector([0,0,1])
+const ui = UnitVector(1,0,0)
+const uj = UnitVector(0,1,0)
+const uk = UnitVector(0,0,1)
 
 function norm( uv::UnitVector; p=2 ) :: Real
   return norm([uv.x,uv.y,uv.z], p)

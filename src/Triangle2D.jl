@@ -6,6 +6,7 @@
 
 #Various convenient and explicit Trigonometry relations
 
+#are these needed? too object-oriented?
 # struct Triangle
 #   pa::Point
 #   pb::Point

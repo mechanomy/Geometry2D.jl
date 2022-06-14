@@ -6,13 +6,16 @@
 
 
 module Geometry2D
-  using Test
   using Unitful, Unitful.DefaultSymbols
-  # using PyPlot #can use matplotlib arguments directly
-  # using Printf
-  # using StaticArrays #for defined-length arrays: SVector{3,T}
-  # using QuadGK #for numerical integration of ellipseArcLength
   using KeywordDispatch
+  using RecipesBase
+  using UnitfulRecipes #plotting of unitful types
+
+  using Test
+  using Plots #make this a Test dependency, as all plotting is in Recipes?
+  pyplot() #and add reuse=false to the first plot() to get a new window!
+  close("all")
+  # gr() #gr can't have multiple windows... https://github.com/JuliaPlots/Plots.jl/issues/822
 
   # re module layout,
   #cf: https://discourse.julialang.org/t/ann-patmodules-jl-a-better-module-system-for-julia/52226/40

@@ -8,13 +8,14 @@
 
 # Circle2D.jl is a member of Geometry2D.jl via the include()s listed there.
 
-using LinearAlgebra #for cross(), dot(), norm()
+using LinearAlgebra:cross, dot, norm
 
 """A circle has a `center` and a `radius`"""
 struct Circle
   center::Point #[x,y] of the pulley center
   radius::Unitful.Length
 end
+Circle( x::Unitful.Length, y::Unitful.Length, r::Unitful.Length ) = Circle(Geometry2D.Point(x,y), r)
 @kwdispatch Circle()
 @kwmethod Circle(; center::Point, radius::Unitful.Length ) = Circle(center, radius)
 
@@ -36,7 +37,9 @@ function isSegmentMutuallyTangent(; cA::Circle, cB::Circle, thA::Radian, thB::Ra
   return isSegmentPerpendicularToParallelVectors( rvA, rvB, tol)
 end
 
-"""Tests whether a segment connecting the tips of `a` and `b` is perpendicular to both which also implies pallelity of `a` and `b`.
+"""
+`isSegmentPerpendicularToParallelVectors( vA::Vector2D, vB::Vector2D, tol::Number=1e-3)::Bool`
+Tests whether a segment connecting the tips of `a` and `b` is perpendicular to both, which also implies parallelity of `a` and `b`.
 The calculation compares the direction of the cross products of `a` and the tip-connecting segment, and `b` and the segment, that these are within `tol` of each other.
 """
 function isSegmentPerpendicularToParallelVectors( vA::Vector2D, vB::Vector2D, tol::Number=1e-3)
@@ -79,17 +82,23 @@ function circleArcLength( circle::Circle, angle::Angle )
   return circleArcLength( circle.radius, angle )
 end
 
-
-
-
-
-# using PyPlot
-# function plotCircle( circ::Circle, col )
-#   th = range(0,2*pi,length=100)
-#   x = ustrip(circ.center.x) .+ ustrip(circ.radius).*cos.(th)
-#   y = ustrip(circ.center.y) .+ ustrip(circ.radius).*sin.(th)
-#   plot(x,y, color=col, alpha=0.5 )
-# end
+"""
+A plot recipe for plotting Circles under Plots.jl.
+```
+c = Circle( 3mm,4mm, 5mm )
+plot(c) #plot(c, linecolor=:red, ...kwArgs... )
+```
+"""
+@recipe function plotRecipe(circle::Circle) 
+  seriestype := :path # turns seriestype := :path into plotattributes[:seriestype] = :path, forcing that attribute value
+  
+  th = LinRange(0,2*π, 100)
+  # x = ustrip(axisUnit, circle.center.x) .+ ustrip(axisUnit, circle.radius) .* cos.(th) #w/o UnitfulRecipes
+  # y = ustrip(axisUnit, circle.center.y) .+ ustrip(axisUnit, circle.radius) .* sin.(th)
+  x = circle.center.x .+ circle.radius .* cos.(th) #with UnitfulRecipes, applies a unit label to the axes
+  y = circle.center.y .+ circle.radius .* sin.(th)
+  x,y #return the data
+end
 
 function testCircle2D()
   @testset "Circle constructors" begin
@@ -99,6 +108,7 @@ function testCircle2D()
     @test c.center.x == 1u"mm" && c.center.y == 50.8u"mm" 
     @test c.radius == 5u"mm"
     @test typeof( Circle(center=p, radius=r) ) <: Circle
+    @test typeof( Circle(1mm,2mm,3mm) ) <: Circle
   end
 
   @testset "Circle isSegmentTangent" begin
@@ -127,6 +137,16 @@ function testCircle2D()
     @test circleArcLength(ca, a) == 1m
   end
 
+  # re testing plots, https://discourse.julialang.org/t/how-to-test-plot-recipes/2648/4
+  @testset "Circle plotRecipe" begin
+    c = Circle(1mm,2mm,3mm)
+    p = plot(c, reuse=false)
+    c = Circle(1mm,2mm,4mm)
+    p = plot!(c, linecolor=:red, xlabel="x", ylabel="y")
+    display(p) #produces a correct gks qt plot window
+
+    @test true
+  end
 
 end #testCircle()
 
