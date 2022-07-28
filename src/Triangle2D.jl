@@ -6,19 +6,21 @@
 
 #Various convenient and explicit Trigonometry relations
 
-#are these needed? too object-oriented?
-# struct Triangle
+#Are structs needed? How many primitives are needed and why?
+# abstract type AbstractTriangle end
+# struct Triangle <: AbstractTriangle
 #   pa::Point
 #   pb::Point
 #   pc::Point
 # end
-# struct RightTriangle
+# struct RightTriangle <: AbstractTriangle
 #   pa::Point
 #   pb::Point
 #   pc::Point
 #   RightTriangle() assert right angle
 # end
 
+export legLeg2Hypotenuse, legHypotenuse2Leg, angleOpposite2Adjacent, angleAdjacent2Opposite, lawOfCosines, lawOfSines
 
 """
 For a right triangle, find the length of the hypotenuse from the shorter legs `a` and `b`.
@@ -103,30 +105,3 @@ function lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle)
 end
 
 
-function testTriangle2D()
-  
-  @testset "legLeg2Hypotenuse" begin
-    @test legLeg2Hypotenuse( 1m, 1m ) ≈ sqrt(2)*m
-  end
-
-  @testset "legHypotenuse2Leg" begin
-    @test legHypotenuse2Leg( 1m, √2m ) ≈ 1m
-  end
-
-  @testset "angleOpposite2Adjacent" begin
-    @test angleOpposite2Adjacent( (π/4)*rad, 1m ) ≈ 1m
-  end
-
-  @testset "angleAdjacent2Opposite" begin
-    @test angleAdjacent2Opposite( (π/4)*rad, 1m ) ≈ 1m
-  end
-
-  @testset "lawOfCosines" begin
-    @test lawOfCosines( 1m, 1m, 135°) ≈ legLeg2Hypotenuse( (1+√.5)*m, √.5m ) 
-  end
-
-  @testset "lawOfSines" begin
-    @test lawOfSines( 1m, 45°, 45°) ≈ 1m
-  end
-
-end

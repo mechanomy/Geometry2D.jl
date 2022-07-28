@@ -12,9 +12,9 @@
 # """
 
 import Base.+, Base.-, Base.*, Base./, Base.isapprox
-import LinearAlgebra.norm, LinearAlgebra.normalize
+import LinearAlgebra.norm 
 
-export Point, Delta, distance, angle, length
+export Point, Delta, UnitVector2D, distance, angle, length, normalize, norm, isapprox
 
 """A point on the cartesian plane, measured in `x` and `y` from the plane's origin"""
 struct Point
@@ -25,6 +25,32 @@ end
 @kwmethod Point(;x::Unitful.Length, y::Unitful.Length) = Point(x,y)
 # @kwmethod Point(refrenceFrame; x::Unitful.Length, y::Unitful.Length) = Point(x,y) # maybe introduce multiple reference frames...later; looking at you CadQuery
 
+"""A difference between two points on the cartesian plane, measured in `dx` and `dy` from the plane's origin.
+This is introduced as a separate type to avoid using Vector{}s with undetermined lengths.
+"""
+struct Delta
+  dx::Unitful.Length
+  dy::Unitful.Length
+end
+@kwdispatch Delta()
+@kwmethod Delta(;dx::Unitful.Length, dy::Unitful.Length) = Delta(dx,dy)
+
+
+#I could use StaticArrays.jl to define fixed-length arrays, but this way I can enforce unit length at construction...
+"""A `UnitVector2D` type is unitless, expressing only relative magnitude. It has fields `x` and `y`"""
+struct UnitVector2D
+  x::Real
+  y::Real
+  #constructor with length enforcement 
+  UnitVector2D(x::Real, y::Real) = new(x/norm([x,y]), y/norm([x,y]))
+end
+UnitVector2D(dl::Delta) = normalize(dl)
+@kwdispatch UnitVector2D()
+@kwmethod UnitVector2D(; x::Real, y::Real) = UnitVector2D(x,y)
+
+
+# It doesn't make sense to Plot deltas by themselves, rather they are a line between Points but since Delta does not record the originating Points this can't be drawn by a Recipe
+# Similarly for UnitVectors which also need to attach to a Point for plotting
 """
 A plot recipe for plotting Points under Plots.jl.
 ```
@@ -44,20 +70,7 @@ plot(p)
   [ustrip(point.x)], [ustrip(point.y)] #return the data
 end
 
-
-
-
-"""A difference between two points on the cartesian plane, measured in `dx` and `dy` from the plane's origin.
-This is introduced as a separate type to avoid using Vector{}s with undetermined lengths.
-"""
-struct Delta
-  dx::Unitful.Length
-  dy::Unitful.Length
-end
-@kwdispatch Delta()
-@kwmethod Delta(;dx::Unitful.Length, dy::Unitful.Length) = Delta(dx,dy)
-
-"""Finds the Delta between `a` and `b`"""
+"""Finds the Delta between Points `a` and `b`"""
 function (-)(a::Point, b::Point) :: Delta
   return Delta(dx=a.x-b.x, dy=a.y-b.y)
 end
@@ -86,28 +99,26 @@ function (/)(d::Delta, f::Real) :: Delta
   return Delta(dx=d.dx/f, dy=d.dy/f)
   # return Delta(d.dx/f, d.dy/f)
 end
-#can't divide a delta by units and get a Delta, only a unitless magnitude...
-# function (/)(d::Delta, f::Unitful.Length) :: Delta
-#   return Delta(dx=d.dx/f, dy=d.dy/f)
-# end
 
-
-"""Finds the straight-line distance between `a` and `b`"""
-function distance(a::Point, b::Point )::Unitful.Length
-  return norm(a-b)
-end
-
+import Base.angle
 """Calculate the angle of Delta `d` relative to global x = horizontal"""
-function angle(d::Delta)
+function angle(d::Delta) :: Radian
+  # return angle(d) * 1.0u"rad" just calls itself, not the Real producing
+  return atan(d.dy, d.dx) * 1.0u"rad"
+end
+function angle(d::Delta) :: typeof(1.0u"°") #dispatch does not distinguish by return type!
+  return rad2deg(atan(d.dy, d.dx)) * 1.0u"°" #this is atan2
+end
+function angle(d::Delta) :: Real
   return atan(d.dy,d.dx) #this is atan2
 end
 
-# """
-# `Base.length( d::Delta; p=2 ) :: Unitful.Length`
-# Returns the 2-norm of `d`"""
-# function Base.length( d::Delta; p=2 ) :: Unitful.Length
-#   return norm(d, p=p)
-# end
+"""Finds the straight-line distance between `a` and `b`
+It is nonsensical to ask for the 'distance' of a Delta, rather Deltas have a norm().
+"""
+function distance(a::Point, b::Point )::Unitful.Length
+  return norm(a-b)
+end
 
 """
 `norm( pt::Point; p=2 ) :: Unitful.Length`
@@ -123,31 +134,11 @@ function norm( d::Delta; p=2 ) ::Unitful.Length
   return norm( [d.dx, d.dy], p )
 end
 
-"""Approximately compare Points `p` to `q`"""
-function isapprox(p::Point, q::Point; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
-  return isapprox( ustrip(unit(p.x), p.x), ustrip(unit(p.x), q.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
-          isapprox( ustrip(unit(p.x), p.y), ustrip(unit(p.x), q.y), atol=atol, rtol=rtol)
+"""Returns the `p`-norm of `u`"""
+function norm( u::UnitVector2D; p=2 ) :: Real
+  return norm( [u.x, u.y], p )
 end
 
-"""Approximately compare Deltas `a` to `b`"""
-function isapprox(a::Delta, b::Delta; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
-  return isapprox( ustrip(unit(a.dx), a.dx), ustrip(unit(a.dx), b.dx), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
-         isapprox( ustrip(unit(a.dx), a.dy), ustrip(unit(a.dx), b.dy), atol=atol, rtol=rtol)
-end
-
-
-
-#I could use StaticArrays.jl to define fixed-length arrays, but this way I can enforce unit length at construction...
-"""A `UnitVector2D` type is unitless, expressing only relative magnitude. It has fields `x` and `y`"""
-struct UnitVector2D
-  x::Real
-  y::Real
-  #constructor with length enforcement 
-  UnitVector2D(x::Real, y::Real) = new(x/norm([x,y]), y/norm([x,y]))
-end
-UnitVector2D(dl::Delta) = normalize(dl)
-@kwdispatch UnitVector2D()
-@kwmethod UnitVector2D(; x::Real, y::Real) = UnitVector2D(x,y)
 
 """`normalize( p::Point )::UnitVector2D`
 Return a UnitVector2D pointing toward Point `p`"""
@@ -163,97 +154,21 @@ function normalize( d::Delta )::UnitVector2D  #https://github.com/PainterQubits/
   return UnitVector2D(d.dx/nd, d.dy/nd) #units cancel
 end
 
-"""Returns the `p`-norm of `u`"""
-function norm( u::UnitVector2D; p=2 ) :: Real
-  return norm( [u.x, u.y], p )
+
+"""Approximately compare Points `p` to `q`"""
+function isapprox(p::Point, q::Point; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
+  return isapprox( ustrip(unit(p.x), p.x), ustrip(unit(p.x), q.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
+          isapprox( ustrip(unit(p.x), p.y), ustrip(unit(p.x), q.y), atol=atol, rtol=rtol)
+end
+
+"""Approximately compare Deltas `a` to `b`"""
+function isapprox(a::Delta, b::Delta; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
+  return isapprox( ustrip(unit(a.dx), a.dx), ustrip(unit(a.dx), b.dx), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
+         isapprox( ustrip(unit(a.dx), a.dy), ustrip(unit(a.dx), b.dy), atol=atol, rtol=rtol)
 end
 
 """Approximately compare Deltas `a` to `b`"""
 function isapprox(a::UnitVector2D, b::UnitVector2D; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
   return isapprox( ustrip(unit(a.x), a.x), ustrip(unit(a.x), b.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
          isapprox( ustrip(unit(a.x), a.y), ustrip(unit(a.x), b.y), atol=atol, rtol=rtol)
-end
-
-function testPoint2D()
-
-  # test rationale:
-  # - Uniful conversions are correct
-  # - assignments correct
-  @testset "Point constructor" begin
-    p = Point(1u"mm",2u"inch")
-    @test p.x == 1e-3u"m" && p.y == 50.8u"mm"
-
-    p = Point(x=1m,y=2m)
-    @test p.x == 1m && p.y == 2m
-  end
-
-  @testset "Point operators" begin
-    pa = Point(x=1m,y=2m)
-    d = Delta(dx=3m,dy=4m)
-    pb = pa+d
-    @test pb == Point(4m, 6m)
-    pc = pa-d
-    @test pc == Point(-2m, -2m)
-    pd = pa*3
-    @test pd == Point(3m, 6m)
-    pe = pa/3
-    @test pe ≈ Point( (1/3)*m, (2/3)*m )
-
-    @test Point(x=1m,y=2m) ≈ Point(x=1m,y=2m+1e-8m)# √eps=1e-8 or so
-    @test !(Point(x=1m,y=2m) ≈ Point(x=1m,y=2m+1e-7m)) 
-
-    @test norm(pa) ≈ sqrt(5)*m
-  end
-
-  @testset "Point functions" begin
-    pa = Point(x=1m,y=2m)
-    pb = Point(x=3m,y=4m)
-    @test distance( pa, pb) == sqrt(8)*m
-
-    @test isapprox(pa,pb) == false
-
-    ua = normalize(pa)
-    @test ua.x ≈ 1/sqrt(5)
-    @test ua.y ≈ 2/sqrt(5)
-  end
-
-  @testset "Point recipe" begin
-    pt = Point(1mm,2mm)
-    p = plot(pt, reuse=false)
-    p = plot!( Point(1mm,3mm), color=:red )
-    p = plot!( Point(2mm,3mm), markersize=10)
-    p = plot!( Point(3mm,3mm), markershape=:diamond)
-    display(p) #make gr() draw a window
- 
-  end
-
-  @testset "Delta operators" begin
-    pa = Point(x=10m,y=20m)
-    pb = Point(x=1m,y=2m)
-    dl = pa-pb
-    @test dl.dx == 9m && dl.dy == 18m 
-  end
-
-  @testset "Delta functions" begin
-    pa = Point(x=10m,y=20m)
-    pb = Point(x=1m,y=2m)
-    dl = pa-pb
-    @test norm(dl) ≈ sqrt(9^2+18^2)*m
-
-    ua = normalize(pa-pb)
-    @test norm(ua) ≈ 1
-  end
-
-  @testset "UnitVector2D" begin
-    ua = UnitVector2D(1,2) #constructor enforces unit length
-    @test norm(ua) ≈ 1 
-    ub = UnitVector2D(x=-1, y=1) #constructor enforces unit length
-    @test norm(ub) ≈ 1 
-
-    @test isapprox(ua, ub) == false
-    uc = UnitVector2D(1+1e-5,2) #constructor enforces unit length
-    @test isapprox(ua, uc, rtol=1e-3) == true
-  end
-
-
 end

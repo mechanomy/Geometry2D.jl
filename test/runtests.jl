@@ -25,7 +25,14 @@ using Geometry2D
 # Geometry2D.testTransform2D()
 # Geometry2D.testUnitfuller()
 
-include("testSpiral.jl")
+include("testVector2D.jl")
+include("testTransform2D.jl")
+include("testPoint2D.jl")
+include("testCircle2D.jl")
+include("testSpiral2D.jl")
+include("testEllipse2D.jl")
+include("testTriangle2D.jl")
+include("testUnitfuller.jl")
 
 # using Unitful, Unitful.DefaultSymbols
 # using Test

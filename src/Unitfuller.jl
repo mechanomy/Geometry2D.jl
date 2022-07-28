@@ -4,7 +4,12 @@
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+
 # Additional Unitful definitions
+
+export Radian, Angle, angleWrap
+
 
 @derived_dimension Radian dimension(u"rad")
 # @derived_dimension Degree dimension(2*pi)
@@ -26,18 +31,3 @@ function angleWrap(angle::Real) :: Real
   return (angle + 2*pi)%(2*pi)
 end
 
-
-function testUnitfuller()
-  @testset "angleCorrect" begin
-    @test angleWrap(-7rad) ≈ 2*π-7
-    @test angleWrap(-1rad) ≈ 2*π-1
-    @test angleWrap(1rad) ≈ 1
-    @test angleWrap(7rad) ≈ 7-2*π
-
-    @test angleWrap(-7) ≈ 2*π-7
-    @test angleWrap(-1) ≈ 2*π-1
-    @test angleWrap(1) ≈ 1
-    @test angleWrap(7) ≈ 7-2*π
-  end
-
-end
