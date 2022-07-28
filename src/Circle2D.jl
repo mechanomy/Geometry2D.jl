@@ -77,9 +77,16 @@ len = circleArcLength(angle, radius)
 """
 function circleArcLength( radius::Unitful.Length, angle::Angle )
     return abs(uconvert(u"rad", angle)) * radius
+
+  # return uconvert(u"m", Geometry2D.circleArcLength( p.pitch, calculateWrappedAngle(p)) ) #cancel m*rad
 end
+
 function circleArcLength( circle::Circle, angle::Angle )
   return circleArcLength( circle.radius, angle )
+end
+
+function circumference( circle::Circle )
+  return circleArcLength(circle, 2*π * u"rad" )
 end
 
 """
@@ -99,6 +106,15 @@ plot(c) #plot(c, linecolor=:red, ...kwArgs... )
   y = circle.center.y .+ circle.radius .* sin.(th)
   x,y #return the data
 end
+
+
+# function circleArea(r::Unitful.Length) :: Unitful.Area
+#   return π*r^2
+# end
+# function cylinderVolume(; r::Unitful.Length, L::Unitful.Length) :: Unitful.Volume
+#   return circleArea(r) * L
+# end
+
 
 function testCircle2D()
   @testset "Circle constructors" begin

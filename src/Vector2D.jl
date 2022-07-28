@@ -14,9 +14,10 @@ end
 @kwmethod Vector2D(;origin::Point, tip::Point) = Vector2D(origin, tip)
 
 
+# distance
+# norm
 
-
-
+    # @test toStringVectors(seg) == "A:[100.000,100.000]<10.000@90.000°>[100.000,110.000]--B:[-100.000,100.000]<10.000@90.000°>[-100.000,110.000]"
 
 function delta(v::Vector2D) :: Delta
   return v.tip - v.origin

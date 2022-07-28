@@ -5,19 +5,27 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-using Pkg
-Pkg.activate( normpath(joinpath(@__DIR__, "..")) ) #activate this package
+# using Pkg
+# Pkg.activate( normpath(joinpath(@__DIR__, "..")) ) #activate this package
 
-include("../src/Geometry2D.jl")
-Geometry2D.testPoint2D() #draws a gr()
-Geometry2D.testVector2D()
-Geometry2D.testTriangle2D()
-Geometry2D.testCircle2D() #draws a gr()
-Geometry2D.testEllipse2D()
-Geometry2D.testTransform2D()
-Geometry2D.testUnitfuller()
+using Test
+using Unitful, Unitful.DefaultSymbols
+using Plots
+pyplot()
+close("all")
 
+using Geometry2D
 
+# include("../src/Geometry2D.jl")
+# Geometry2D.testPoint2D() #draws a gr()
+# Geometry2D.testVector2D()
+# Geometry2D.testTriangle2D()
+# Geometry2D.testCircle2D() #draws a gr()
+# Geometry2D.testEllipse2D()
+# Geometry2D.testTransform2D()
+# Geometry2D.testUnitfuller()
+
+include("testSpiral.jl")
 
 # using Unitful, Unitful.DefaultSymbols
 # using Test
@@ -43,7 +51,7 @@ Geometry2D.testUnitfuller()
 
 
 
-
+close("all")
 
   
 ; #don't return the last thing

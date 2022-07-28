@@ -20,9 +20,6 @@ UnitVector(vec::AbstractVector) = UnitVector(vec[1], vec[2], vec[3])
 @kwdispatch UnitVector()
 @kwmethod UnitVector(; x::Real, y::Real, z::Real) = UnitVector(x,y,z)
 
-
-
-
 const ui = UnitVector(1,0,0)
 const uj = UnitVector(0,1,0)
 const uk = UnitVector(0,0,1)
