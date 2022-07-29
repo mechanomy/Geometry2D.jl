@@ -30,9 +30,22 @@ end
   r = 1m
   @test circleArcLength(r, a) == 1m
   @test circleArcLength(r, -a) == 1m
+  @test circleArcLength(-r, -a) == 1m
 
   ca = Circle(Point(0m,0m), r)
   @test circleArcLength(ca, a) == 1m
+end
+
+@testset "circumference" begin
+  @test circumference(1m) == π*2.0m
+  @test circumference(-1m) == π*2.0m
+  @test circumference(Circle(3m,2m,1m)) == π*2.0m
+end
+
+@testset "circleArea" begin
+  @test circleArea(1m) == π*(1.0m)^2
+  @test circleArea(-1m) == π*(1.0m)^2
+  @test circleArea(Circle(3m,2m,1m)) == π*(1.0m)^2
 end
 
 # re testing plots, https://discourse.julialang.org/t/how-to-test-plot-recipes/2648/4

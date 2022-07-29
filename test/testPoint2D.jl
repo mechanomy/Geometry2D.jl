@@ -54,7 +54,7 @@ end
   dl = pa-pb
   @test angle(dl) ≈ atan(4,3)
   @test angle(dl) ≈ 0.927295218u"rad"
-  @test isapprox(angle(dl), 53.1301°, rtol=3) 
+  @test isapprox(angled(dl), 53.1301°, rtol=3) 
 end
 
 @testset "norm" begin

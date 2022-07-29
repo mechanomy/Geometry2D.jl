@@ -23,13 +23,18 @@
 export legLeg2Hypotenuse, legHypotenuse2Leg, angleOpposite2Adjacent, angleAdjacent2Opposite, lawOfCosines, lawOfSines
 
 """
+    legLeg2Hypotenuse( a::Unitful.Length, b::Unitful.Length ) :: Unitful.Length
+    legLeg2Hypotenuse(; a::Unitful.Length, b::Unitful.Length ) :: Unitful.Length
 For a right triangle, find the length of the hypotenuse from the shorter legs `a` and `b`.
 """
 function legLeg2Hypotenuse( a::Unitful.Length, b::Unitful.Length ) :: Unitful.Length
   return sqrt( a^2 + b^2 )
 end
+legLeg2Hypotenuse(; a::Unitful.Length, b::Unitful.Length ) = legLeg2Hypotenuse( a, b )
 
 """
+    legHypotenuse2Leg( leg::Unitful.Length, hyp::Unitful.Length  ) :: Unitful.Length
+    legHypotenuse2Leg(; leg::Unitful.Length, hyp::Unitful.Length  ) :: Unitful.Length
 For a right triangle, find the length of the third leg from hypotenuse `hyp` and `leg`.
 """
 function legHypotenuse2Leg( leg::Unitful.Length, hyp::Unitful.Length  ) :: Unitful.Length
@@ -38,34 +43,46 @@ function legHypotenuse2Leg( leg::Unitful.Length, hyp::Unitful.Length  ) :: Unitf
   end
   return sqrt( hyp^2 - leg^2 )
 end
+legHypotenuse2Leg(; leg::Unitful.Length, hyp::Unitful.Length  ) = legHypotenuse2Leg( leg, hyp )
 
 """
+    angleOpposite2Adjacent(angle::Angle, opposite::Unitful.Length) :: Unitful.Length
+    angleOpposite2Adjacent(; angle::Angle, opposite::Unitful.Length) :: Unitful.Length
 For a right triangle, find the length of the 'adjacent' leg, given `angle` and `opposite`.
 """
 function angleOpposite2Adjacent(angle::Angle, opposite::Unitful.Length) :: Unitful.Length
   return opposite / tan(angle)
 end
+angleOpposite2Adjacent(; angle::Angle, opposite::Unitful.Length) = angleOpposite2Adjacent( angle, opposite )
 
 """
+    angleAdjacent2Opposite(angle::Angle, adjacent::Unitful.Length) :: Unitful.Length
+    angleAdjacent2Opposite(angle::Angle, adjacent::Unitful.Length) :: Unitful.Length
 For a right triangle, find the length of the 'opposite' leg, given `angle` and `adjacent`.
 """
 function angleAdjacent2Opposite(angle::Angle, adjacent::Unitful.Length) :: Unitful.Length
   return adjacent * tan(angle)
 end
+angleAdjacent2Opposite(; angle::Angle, adjacent::Unitful.Length) = angleAdjacent2Opposite( angle, adjacent )
 
 """
-Finds the length of the unknown `legC` from `legA`, `legB`, and `angleAB` between them.
+    lawOfCosines(legA::Unitful.Length, legB::Unitful.Length, angleAB::Angle) :: Unitful.Length
+    lawOfCosines(legA::Unitful.Length, legB::Unitful.Length, angleAB::Angle) :: Unitful.Length
+For any triangle, finds the length of the unknown `legC` from `legA`, `legB`, and `angleAB` between them.
 """
 function lawOfCosines(legA::Unitful.Length, legB::Unitful.Length, angleAB::Angle) :: Unitful.Length
   return sqrt( legA^2 + legB^2 -2*legA*legB*cos(angleAB))
 end
+lawOfCosines(; legA::Unitful.Length, legB::Unitful.Length, angleAB::Angle) = lawOfCosines( legA, legB, angleAB )
 
 """
+    lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle) :: Unitful.Length
+    lawOfSines(; legA::Unitful.Length, angleBC::Angle, angleCA::Angle) :: Unitful.Length
 For any triangle with legs A, B, C and angles AB, BC, CA, so that `legA` is the open side of `angleBC`, finds legB corresponding to `angleCA`.
 """
-function lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle)
+function lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle) :: Unitful.Length
   return legA * sin(angleCA)/sin(angleBC)
-# function lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle, showDiagram=false)
+  # function lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle, showDiagram=false)
   # if showDiagram
   #   fig2 = figure()
 
@@ -103,5 +120,6 @@ function lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle)
   #   grid()
   # end
 end
+lawOfSines(; legA::Unitful.Length, angleBC::Angle, angleCA::Angle) = lawOfSines( legA, angleBC, angleCA )
 
 

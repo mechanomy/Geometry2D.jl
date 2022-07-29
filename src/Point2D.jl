@@ -14,19 +14,27 @@
 import Base.+, Base.-, Base.*, Base./, Base.isapprox
 import LinearAlgebra.norm 
 
-export Point, Delta, UnitVector2D, distance, angle, length, normalize, norm, isapprox
+export Point, Delta, UnitVector2D, distance, angle, angled, length, normalize, norm, isapprox
 
-"""A point on the cartesian plane, measured in `x` and `y` from the plane's origin"""
+"""
+A point on the cartesian plane, measured in `x` and `y` from the plane's origin.
+"""
 struct Point
   x::Unitful.Length
   y::Unitful.Length
 end
 @kwdispatch Point()
-@kwmethod Point(;x::Unitful.Length, y::Unitful.Length) = Point(x,y)
-# @kwmethod Point(refrenceFrame; x::Unitful.Length, y::Unitful.Length) = Point(x,y) # maybe introduce multiple reference frames...later; looking at you CadQuery
 
-"""A difference between two points on the cartesian plane, measured in `dx` and `dy` from the plane's origin.
-This is introduced as a separate type to avoid using Vector{}s with undetermined lengths.
+"""
+    Point(;x::Unitful.Length, y::Unitful.Length) 
+Keyword constructor for a point on the cartesian plane, measured in `x` and `y` from the plane's origin.
+"""
+@kwmethod Point(;x::Unitful.Length, y::Unitful.Length) = Point(x,y)
+# @kwmethod Point(refrenceFrame; x::Unitful.Length, y::Unitful.Length) = Point(x,y) # maybe introduce multiple reference frames...later
+
+"""
+A difference between two points on the cartesian plane, measured in `dx` and `dy` from the plane's origin.
+This is introduced as a separate type to avoid using Vector{}s with inexplicit length.
 """
 struct Delta
   dx::Unitful.Length
@@ -36,16 +44,30 @@ end
 @kwmethod Delta(;dx::Unitful.Length, dy::Unitful.Length) = Delta(dx,dy)
 
 
-#I could use StaticArrays.jl to define fixed-length arrays, but this way I can enforce unit length at construction...
-"""A `UnitVector2D` type is unitless, expressing only relative magnitude. It has fields `x` and `y`"""
+# could use StaticArrays.jl to define fixed-length arrays, but this way I can enforce unit length at construction...
+"""A `UnitVector2D` type is unitless, expressing only relative magnitude. It has fields `x` and `y`."""
 struct UnitVector2D
   x::Real
   y::Real
-  #constructor with length enforcement 
+
+  """
+      UnitVector2D(x::Real, y::Real)
+  Default constructor enforcing unit length.
+  """
   UnitVector2D(x::Real, y::Real) = new(x/norm([x,y]), y/norm([x,y]))
 end
+
+"""
+    UnitVector2D(dl::Delta)
+Constructs a UnitVector2D in the direction of `dl`.
+"""
 UnitVector2D(dl::Delta) = normalize(dl)
+
 @kwdispatch UnitVector2D()
+"""
+    UnitVector2D(; x::Real, y::Real)
+Keyword constructor.
+"""
 @kwmethod UnitVector2D(; x::Real, y::Real) = UnitVector2D(x,y)
 
 
@@ -70,105 +92,152 @@ plot(p)
   [ustrip(point.x)], [ustrip(point.y)] #return the data
 end
 
-"""Finds the Delta between Points `a` and `b`"""
+"""
+    (-)(a::Point, b::Point) :: Delta
+Finds the Delta between Points `a` and `b`.
+"""
 function (-)(a::Point, b::Point) :: Delta
   return Delta(dx=a.x-b.x, dy=a.y-b.y)
 end
 
-"""Adds a `d` Delta to Point `p`"""
+"""
+    (+)(p::Point, d::Delta) :: Point
+Adds a `d` Delta to Point `p`.
+"""
 function (+)(p::Point, d::Delta) :: Point
   return Point(x=p.x+d.dx, y=p.y+d.dy)
 end
 
-"""Subtracts a Delta `d` from the Point `p`"""
+"""
+    (-)(p::Point, d::Delta) :: Point
+Subtracts a Delta `d` from the Point `p`.
+"""
 function (-)(p::Point, d::Delta) :: Point
   return Point(x=p.x-d.dx, y=p.y-d.dy)
 end
 
-"""Multiplies `p` by the given factor `f`"""
+""" 
+    (*)(p::Point, f::Real) :: Point
+Multiplies `p` by the given factor `f`.
+"""
 function (*)(p::Point, f::Real) :: Point
   return Point(x=p.x*f, y=p.y*f)
 end
-"""Divides `p` by the given factor `f`"""
+
+"""
+    (/)(p::Point, f::Real) :: Point
+Divides `p` by the given factor `f`.
+"""
 function (/)(p::Point, f::Real) :: Point
   return Point(x=p.x/f, y=p.y/f)
 end
 
-"""Divides `d` by the given factor `f`"""
+"""
+    (/)(d::Delta, f::Real) :: Delta
+Divides `d` by the given factor `f`.
+"""
 function (/)(d::Delta, f::Real) :: Delta
   return Delta(dx=d.dx/f, dy=d.dy/f)
   # return Delta(d.dx/f, d.dy/f)
 end
 
 import Base.angle
-"""Calculate the angle of Delta `d` relative to global x = horizontal"""
+""" 
+    angle(d::Delta) :: Radian
+Calculate the angle of Delta `d` relative to global x = horizontal.
+"""
 function angle(d::Delta) :: Radian
   # return angle(d) * 1.0u"rad" just calls itself, not the Real producing
   return atan(d.dy, d.dx) * 1.0u"rad"
 end
-function angle(d::Delta) :: typeof(1.0u"°") #dispatch does not distinguish by return type!
+function angled(d::Delta) :: typeof(1.0u"°") #Given a 'd' since dispatch does not distinguish by return type, scuttling precompilation
   return rad2deg(atan(d.dy, d.dx)) * 1.0u"°" #this is atan2
 end
+
+""" 
+    angle(d::Delta) :: Real
+Calculate the angle of Delta `d` relative to global x = horizontal.
+"""
 function angle(d::Delta) :: Real
   return atan(d.dy,d.dx) #this is atan2
 end
 
-"""Finds the straight-line distance between `a` and `b`
-It is nonsensical to ask for the 'distance' of a Delta, rather Deltas have a norm().
+"""
+    distance(a::Point, b::Point ) :: Unitful.Length
+Finds the straight-line distance between `a` and `b`.
+(It is nonsensical to ask for the 'distance' of a [Delta](#Geometry2D.Delta), rather Deltas have norm().)
 """
 function distance(a::Point, b::Point )::Unitful.Length
   return norm(a-b)
 end
 
 """
-`norm( pt::Point; p=2 ) :: Unitful.Length`
-Returns the `p`-norm of `pt`"""
+    norm( pt::Point; p=2 ) :: Unitful.Length
+Returns the `p`-norm of `pt`.
+"""
 function norm( pt::Point; p=2 ) :: Unitful.Length
   return norm( [pt.x, pt.y], p )
 end
 
 """
-`norm( d::Delta; p=2 ) :: Unitful.Length`
-Returns the `p`-norm of `d`"""
+    norm( d::Delta; p=2 ) :: Unitful.Length
+Returns the `p`-norm of `d`.
+"""
 function norm( d::Delta; p=2 ) ::Unitful.Length
   return norm( [d.dx, d.dy], p )
 end
 
-"""Returns the `p`-norm of `u`"""
+"""
+    norm( u::UnitVector2D; p=2 ) :: Real
+Returns the `p`-norm of `u`.
+"""
 function norm( u::UnitVector2D; p=2 ) :: Real
   return norm( [u.x, u.y], p )
 end
 
-
-"""`normalize( p::Point )::UnitVector2D`
-Return a UnitVector2D pointing toward Point `p`"""
+"""
+    normalize( p::Point ) :: UnitVector2D
+Return a [UnitVector2D](#Geometry2D.UnitVector2D) pointing toward Point `p`.
+"""
 function normalize( p::Point )::UnitVector2D 
   np = norm(p)
   return UnitVector2D(p.x/np, p.y/np) #units cancel
 end
 
-"""`normalize( d::Delta )::UnitVector2D`
-Return a UnitVector2D for Delta `d`"""
+"""
+    normalize( d::Delta ) :: UnitVector2D
+Return a [UnitVector2D](#Geometry2D.UnitVector2D) for Delta `d`.
+"""
 function normalize( d::Delta )::UnitVector2D  #https://github.com/PainterQubits/Unitful.jl/issues/346
   nd = norm(d)
   return UnitVector2D(d.dx/nd, d.dy/nd) #units cancel
 end
 
 
-"""Approximately compare Points `p` to `q`"""
+"""
+    isapprox(p::Point, q::Point; atol=0, rtol=√eps()) :: Bool 
+Approximately compare Points `p` and `q` via absolute tolerance `atol` and relative tolerance `rtol`, as in [isapprox](https://docs.julialang.org/en/v1/base/math/#Base.isapprox).
+"""
 function isapprox(p::Point, q::Point; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
   return isapprox( ustrip(unit(p.x), p.x), ustrip(unit(p.x), q.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
           isapprox( ustrip(unit(p.x), p.y), ustrip(unit(p.x), q.y), atol=atol, rtol=rtol)
 end
 
-"""Approximately compare Deltas `a` to `b`"""
+"""
+    isapprox(a::Delta, b::Delta; atol=0, rtol=√eps()) :: Bool
+Approximately compare Deltas `a` and `b` via absolute tolerance `atol` and relative tolerance `rtol`, as in [isapprox](https://docs.julialang.org/en/v1/base/math/#Base.isapprox).
+"""
 function isapprox(a::Delta, b::Delta; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
   return isapprox( ustrip(unit(a.dx), a.dx), ustrip(unit(a.dx), b.dx), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
          isapprox( ustrip(unit(a.dx), a.dy), ustrip(unit(a.dx), b.dy), atol=atol, rtol=rtol)
 end
 
-"""Approximately compare Deltas `a` to `b`"""
+"""
+    isapprox(a::UnitVector2D, b::UnitVector2D; atol=0, rtol=√eps()) :: Bool 
+Approximately compare UnitVector2Ds `a` and `b` via absolute tolerance `atol` and relative tolerance `rtol`, as in [isapprox](https://docs.julialang.org/en/v1/base/math/#Base.isapprox).
+"""
 function isapprox(a::UnitVector2D, b::UnitVector2D; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
   return isapprox( ustrip(unit(a.x), a.x), ustrip(unit(a.x), b.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
          isapprox( ustrip(unit(a.x), a.y), ustrip(unit(a.x), b.y), atol=atol, rtol=rtol)
 end
+

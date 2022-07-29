@@ -16,15 +16,6 @@ close("all")
 
 using Geometry2D
 
-# include("../src/Geometry2D.jl")
-# Geometry2D.testPoint2D() #draws a gr()
-# Geometry2D.testVector2D()
-# Geometry2D.testTriangle2D()
-# Geometry2D.testCircle2D() #draws a gr()
-# Geometry2D.testEllipse2D()
-# Geometry2D.testTransform2D()
-# Geometry2D.testUnitfuller()
-
 include("testVector2D.jl")
 include("testTransform2D.jl")
 include("testPoint2D.jl")

@@ -9,14 +9,14 @@ end
   po = Point(1m, 1m)
   pt = Point(2m, 2m)
   vot = Vector2D(po,pt)
-  @test angle(vot) == 45°
-  @test angle(Vector2D(po,pt)) == 45°
+  @test angled(vot) == 45°
+  @test angled(Vector2D(po,pt)) == 45°
 
   pt = Point(2m, 0m)
-  @test angle(Vector2D(po,pt)) == -45°
+  @test angled(Vector2D(po,pt)) == -45°
   # @test angle(Vector2D(po,pt)) == 315° =-45, do I want a circular or mod equals?
 
   pt = Point(0m, 0m)
-  @test angle(Vector2D(po,pt)) == -135°
+  @test angled(Vector2D(po,pt)) == -135°
   # @test angle(Vector2D(po,pt)) == 225°
 end

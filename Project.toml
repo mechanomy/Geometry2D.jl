@@ -5,6 +5,8 @@ version = "0.1.3"
 
 [deps]
 ArbNumerics = "7e558dbc-694d-5a72-987c-6f4ebed21442"
+DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 KeywordDispatch = "5888135b-5456-5c80-a1b6-c91ef8180460"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"

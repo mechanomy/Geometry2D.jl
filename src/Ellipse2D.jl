@@ -12,11 +12,11 @@ using ArbNumerics #for elliptic_e below
 export ellipticArcLength
 
 """
-function ellipticArcLength(a::Number, b::Number, angle::Number )::Number
-Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` through `angle` via elliptic integral:
+    ellipticArcLength(a::Number, b::Number, angle::Number ) :: Number
+Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` through `angle`, measured from `a`, via elliptic integral:
 L = b * elliptic_e( atan(a/b*tan(angle)), 1-a^2/b^2 )
 """
-function ellipticArcLength(a::Number, b::Number, angle::Number )::Number
+function ellipticArcLength(a::Number, b::Number, angle::Number ) :: Number
   # see: https://math.stackexchange.com/a/1123737/974011 
 
   if a < 0
@@ -40,12 +40,19 @@ function ellipticArcLength(a::Number, b::Number, angle::Number )::Number
   return abs(b*elliptic_e( ArbReal(phi), ArbReal(m) ))
 end
 
+"""
+    ellipticArcLength(a::Unitful.Length, b::Unitful.Length, angle::Angle)
+Unitful version.
+Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` through `angle`, measured from major axis `a`, via elliptic integral:.
+L = b * elliptic_e( atan(a/b*tan(angle)), 1-a^2/b^2 )
+"""
 function ellipticArcLength(a::Unitful.Length, b::Unitful.Length, angle::Angle)
     return ellipticArcLength( ustrip(unit(a), a), ustrip(unit(a), b), ustrip(u"rad", angle)) * unit(a)
 end
 
 """
-Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` between `star` and `stop`
+    ellipticArcLength(a::Number, b::Number, start::Number, stop::Number)
+Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` between `start` and `stop` angles, as measured from the major axis `a`.
 """
 function ellipticArcLength(a::Number, b::Number, start::Number, stop::Number)
   lStart = ellipticArcLength(a,b, start)

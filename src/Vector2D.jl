@@ -6,32 +6,56 @@
 
 export Vector2D, delta, angle, isapprox
 
-"""A vector from `origin` to `tip`"""
+"""
+A 2D vector from `origin` to `tip`.
+Functions are provided to convert from the struct's cartesian format to polar.
+
+$FIELDS
+
+"""
 struct Vector2D
+  """the origin [Point](#Geometry2D.Point)"""
   origin::Point
+
+  """the tip [Point](#Geometry2D.Point)"""
   tip::Point
 end
 @kwdispatch Vector2D()
-@kwmethod Vector2D(;origin::Point, tip::Point) = Vector2D(origin, tip)
 
+"""
+    Vector2D(;origin::Point, tip::Point)
+Keyword constructor for a vector from `origin` to `tip`.
+"""
+@kwmethod Vector2D(;origin::Point, tip::Point) = Vector2D(origin, tip)
 
 # distance
 # norm
+# @test toStringVectors(seg) == "A:[100.000,100.000]<10.000@90.000°>[100.000,110.000]--B:[-100.000,100.000]<10.000@90.000°>[-100.000,110.000]"
 
-    # @test toStringVectors(seg) == "A:[100.000,100.000]<10.000@90.000°>[100.000,110.000]--B:[-100.000,100.000]<10.000@90.000°>[-100.000,110.000]"
-
+"""
+    delta(v::Vector2D) :: Delta
+Given `v`, return the difference in x and y as a [Delta](#Geometry2D.Delta) from `v`'s tip to origin.
+"""
 function delta(v::Vector2D) :: Delta
   return v.tip - v.origin
 end
 
-import Base.angle
-"""Calculate the angle of Delta `d` relative to global x = horizontal"""
+import Base.angle # Both Geometry2D and Base export a method angle(), leading to a collision even though they are differentiated by type, as https://discourse.julialang.org/t/two-modules-with-the-same-exported-function-name-but-different-signature/15231/13
+"""
+    angle(v::Vector2D) :: Angle
+Calculate the angle of [Delta](#Geometry2D.Delta) `d` relative to global x = horizontal, via atan().
+"""
 function angle(v::Vector2D) :: Angle
-  # Both Geometry2D and Base export a method angle(), leading to a collision even though they are differentiated by type, as https://discourse.julialang.org/t/two-modules-with-the-same-exported-function-name-but-different-signature/15231/13
   return angle(delta(v))
 end
+function angled(v::Vector2D) :: typeof(1.0u"°")
+  return angled(delta(v))
+end
 
-"""Approximately compare Vectors `a` to `b`"""
+"""
+    isapprox(a::Vector2D, b::Vector2D; atol=0, rtol=√eps()) :: Bool 
+Approximately compare [Vector2D](#Geometry2D.Vector2D)s `a` to `b` via absolute tolerance `atol` and relative tolerance `rtol`, as in [isapprox](https://docs.julialang.org/en/v1/base/math/#Base.isapprox).
+"""
 function isapprox(a::Vector2D, b::Vector2D; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
   return isapprox(a.origin, b.origin, atol=atol, rtol=rtol) && isapprox(a.tip, b.tip, atol=atol, rtol=rtol) 
 end

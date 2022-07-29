@@ -10,21 +10,22 @@
 
 export Radian, Angle, angleWrap
 
-
 @derived_dimension Radian dimension(u"rad")
 # @derived_dimension Degree dimension(2*pi)
 # @unit deg "deg" Degree 360/2*pi false
 Angle{T} = Union{Quantity{T,NoDims,typeof(u"rad")}, Quantity{T,NoDims,typeof(u"°")}} where T
 
  
-"""`angleWrap(angle::Radian) :: Radian`
+"""
+    angleWrap(angle::Radian) :: Radian
 Wraps `angle` between 0 and 2π.
 """
-function angleWrap(angle::Radian)
+function angleWrap(angle::Radian) :: Radian
   return (ustrip(u"rad", angle) + 2*pi)%(2*pi) * 1.0u"rad"
 end
 
-"""`angleWrap(angle::Real) :: Real`
+"""
+    angleWrap(angle::Real) :: Real
 Wraps `angle` between 0 and 2π.
 """
 function angleWrap(angle::Real) :: Real

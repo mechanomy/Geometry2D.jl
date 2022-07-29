@@ -5,6 +5,7 @@ end
 
 @testset "legHypotenuse2Leg" begin
   @test legHypotenuse2Leg( 1m, √2m ) ≈ 1m
+  @test legHypotenuse2Leg( leg=1m, hyp=√2m ) ≈ 1m
 end
 
 @testset "angleOpposite2Adjacent" begin
