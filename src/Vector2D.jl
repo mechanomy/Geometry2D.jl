@@ -43,7 +43,8 @@ end
 import Base.angle # Both Geometry2D and Base export a method angle(), leading to a collision even though they are differentiated by type, as https://discourse.julialang.org/t/two-modules-with-the-same-exported-function-name-but-different-signature/15231/13
 """
     angle(v::Vector2D) :: Angle
-Calculate the angle of [Delta](#Geometry2D.Delta) `d` relative to global x = horizontal, via atan().
+    angled(v::Vector2D) :: typeof(1.0u"°")
+Calculate the angle of [Vector2D](#Geometry2D.Vector2D) `v` relative to global x = horizontal, via atan().
 """
 function angle(v::Vector2D) :: Angle
   return angle(delta(v))

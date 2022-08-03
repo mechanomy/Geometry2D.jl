@@ -7,6 +7,8 @@
 """
 Geometry2D models basic geometric shapes and common geometric formulae.
 This is a flat module with entities grouped into similar files under `src`.
+
+See online documentation at https://mechanomy.github.io/Geometry2D.jl/dev/ and [tests](/tests) for examples of each function.
 """
 module Geometry2D
   using DocStringExtensions
@@ -20,7 +22,7 @@ module Geometry2D
   pyplot() #and add reuse=false to the first plot() to get a new window!
 
   include("Unitfuller.jl")
-  include("Point2D.jl") #bring all of Point2D.jl into the Geometry2D module, Point2D.jl is not a module, just a file of lines
+  include("Point2D.jl") 
   include("Vector2D.jl")
   include("Triangle2D.jl")
   include("Circle2D.jl")
@@ -28,5 +30,5 @@ module Geometry2D
   include("Transform2D.jl")
   include("Spiral2D.jl")
 
-end; #Geometry2D
+end; 
 
