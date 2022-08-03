@@ -35,9 +35,7 @@ deploydocs(
   devurl = "dev",
   versions = ["stable" => "v^", "v#.#", "dev" => "dev"],
   forcepush = false,
-  deploy_config = auto_detect_deploy_system(),
+  deploy_config = Documenter.auto_detect_deploy_system(),
   push_preview = false,
-  repo_previews = repo,
-  branch_previews = branch,
 )
 
