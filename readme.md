@@ -10,7 +10,8 @@ Included entities/concepts:
 * Spirals
 * Homogeneous transforms
 
-**Need documentation or support? Please open an [enhancement issue](https://github.com/mechanomy/Geometry2D.jl/issues/new/choose) to help us allocate resources.**
+Many more entities and functions are under consideration, pending need.
+**Please open an [enhancement issue](https://github.com/mechanomy/Geometry2D.jl/issues/new/choose) to help us prioritize our efforts.**
 
 ## Installation
 ```julia
