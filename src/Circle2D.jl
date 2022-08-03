@@ -154,10 +154,12 @@ plot(c) #plot(c, linecolor=:red, ...kwArgs... )
   seriestype := :path # turns seriestype := :path into plotattributes[:seriestype] = :path, forcing that attribute value
   
   th = LinRange(0,2*π, 100)
-  # x = ustrip(axisUnit, circle.center.x) .+ ustrip(axisUnit, circle.radius) .* cos.(th) #w/o UnitfulRecipes
-  # y = ustrip(axisUnit, circle.center.y) .+ ustrip(axisUnit, circle.radius) .* sin.(th)
-  x = circle.center.x .+ circle.radius .* cos.(th) #with UnitfulRecipes, applies a unit label to the axes
-  y = circle.center.y .+ circle.radius .* sin.(th)
+  # axisUnit=u"mm"
+  axisUnit=unit(circle.radius)
+  x = ustrip(axisUnit, circle.center.x) .+ ustrip(axisUnit, circle.radius) .* cos.(th) #w/o UnitfulRecipes
+  y = ustrip(axisUnit, circle.center.y) .+ ustrip(axisUnit, circle.radius) .* sin.(th)
+  # x = circle.center.x .+ circle.radius .* cos.(th) #with UnitfulRecipes, applies a unit label to the axes
+  # y = circle.center.y .+ circle.radius .* sin.(th) #...but doesn't apply the same scale to both axes, eg mm in x and inch in y
   x,y #return the data
 end
 
