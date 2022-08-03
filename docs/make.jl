@@ -6,6 +6,10 @@ using DocStringExtensions
 using Geometry2D
 
 
+
+
+
+
 # https://github.com/cscherrer/MeasureTheory.jl/blob/master/docs/make.jl
 # DocMeta.setdocmeta!(BeltTransmission, :DocTestSetup, :(using BeltTransmission); recursive = true)
 
@@ -22,6 +26,10 @@ makedocs(
   checkdocs=:all,
   # linkcheck=true, fails to find internal links to bookmarks..
   )
+
+# compile custom theme scss in to css, copying over the default themes
+DocumenterTools.Themes.compile("docs/src/assets/themes/documenter-mechanomy.scss", "docs/build/assets/themes/documenter-dark.css")
+DocumenterTools.Themes.compile("docs/src/assets/themes/documenter-mechanomy.scss", "docs/build/assets/themes/documenter-light.css")
 
 deploydocs(
   root = joinpath(dirname(pathof(Geometry2D)), "..", "docs"),
