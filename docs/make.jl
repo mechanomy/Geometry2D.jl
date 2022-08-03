@@ -1,6 +1,7 @@
 # following https://juliadocs.github.io/Documenter.jl/stable/man/guide/
 
 using Documenter
+using DocumenterTools
 using DocStringExtensions
 using Geometry2D
 
@@ -32,7 +33,7 @@ deploydocs(
   make = nothing,
   devbranch = "main",
   devurl = "dev",
-  versions = ["stable" => "v^", "v#.#", devurl => devurl],
+  versions = ["stable" => "v^", "v#.#", "dev" => "dev"],
   forcepush = false,
   deploy_config = auto_detect_deploy_system(),
   push_preview = false,
