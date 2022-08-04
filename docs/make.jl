@@ -15,7 +15,7 @@ makedocs(
   build = "build",
   clean=true,
   doctest=true,
-  repo = "github.com/mechanomy/Geometry2D.jl.git",
+  # repo = "github.com/mechanomy/Geometry2D.jl.git", # automatic for github...don't set it? https://juliadocs.github.io/Documenter.jl/stable/lib/public/#Documenter.makedocs
   draft=false,
   checkdocs=:all,
   # linkcheck=true, fails to find internal links to bookmarks..
