@@ -13,15 +13,31 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Install matplotlib
-        run: if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get install -y python3-matplotlib; fi
-        shell: bash
-      - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1.6'
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2 #220804, v3 broken: https://github.com/jurplel/install-qt-action/issues/153
+        with:
+          host: 'linux'
+          target: 'desktop'
+
+      # - name: Install matplotlib
+      #   run: if [ "$RUNNER_OS" = "Linux" ]; then sudo apt-get install -y python3-matplotlib; fi
+      #   shell: bash
+
+      - name: Checkout Geometry2D
+        uses: actions/checkout@v2
+        with:
+          lfs: true #enable lfs
+      - run: git lfs pull #pull the favicon and logo down after checkout
+
       - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.add("Documenter"); Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+        env:
+          PYTHON: "" #By setting python to null, the PyPlot in docs/Project.toml will install matplotlib itself
+        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # If authenticating with GitHub Actions token

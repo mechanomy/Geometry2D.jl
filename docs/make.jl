@@ -5,12 +5,6 @@ using DocumenterTools
 using DocStringExtensions
 using Geometry2D
 
-
-
-
-
-
-# https://github.com/cscherrer/MeasureTheory.jl/blob/master/docs/make.jl
 # DocMeta.setdocmeta!(BeltTransmission, :DocTestSetup, :(using BeltTransmission); recursive = true)
 
 makedocs(
