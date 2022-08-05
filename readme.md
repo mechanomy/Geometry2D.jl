@@ -24,8 +24,7 @@ Geometry2D's documentation can be accessed through the Julia repl help function
 ```julia
 ? Geometry2D
 ```
-or on the web at [https://mechanomy.github.io/Geometry2D.jl/](https://mechanomy.github.io/Geometry2D.jl/).
-
+or on the [on the web](https://mechanomy.github.io/Geometry2D.jl/dev/).
 
 ## Copyright
 Copyright (c) 2022 Mechanomy LLC.
