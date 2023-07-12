@@ -4,10 +4,9 @@
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
- 
+
 
 using ArbNumerics #for elliptic_e below
-
 
 export ellipticArcLength
 
@@ -35,9 +34,22 @@ function ellipticArcLength(a::Number, b::Number, angle::Number ) :: Number
     throw(DomainError(angle, "angle[$angle] should be greater than -pi/2"))
   end
 
+  # 230712 - getting a segfault when using ArbReal:
+  # println("a $a $(typeof(a))")
+  # println("b $b $(typeof(b))")
+  # println("angle $angle $(typeof(angle))")
   phi = atan( a/b*tan(angle))
-  m = 1 - (a/b)^2
-  return abs(b*elliptic_e( ArbReal(phi), ArbReal(m) ))
+  me = 1 - (a/b)^2
+  # println("me $me $(typeof(me))")
+  # println("ArbReal(me) $(ArbReal(me)) $(typeof(ArbReal(me)))")
+  # println("phi $phi $(typeof(phi))")
+  # println("ArbReal(phi) $(ArbReal(phi)) $(typeof(ArbReal(phi)))")
+  # @show abs(b*elliptic_e( ArbFloat(phi), ArbFloat(me) ))
+  # println("this line segfaults: x = elliptic_e( ArbReal(phi), ArbReal(me)")
+  # @show x = elliptic_e( ArbReal(phi), ArbReal(me) )
+
+  # return abs(b*elliptic_e( ArbReal(phi), ArbReal(me) ))
+  return abs(b*elliptic_e( ArbFloat(phi), ArbFloat(me) ))
 end
 
 """

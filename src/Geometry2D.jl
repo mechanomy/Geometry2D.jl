@@ -12,14 +12,13 @@ See online documentation at https://mechanomy.github.io/Geometry2D.jl/dev/ and [
 """
 module Geometry2D
   using DocStringExtensions
-  using Unitful, Unitful.DefaultSymbols
+  using Unitful
   using KeywordDispatch
   using RecipesBase
-  using UnitfulRecipes #plotting of unitful types
 
   using Test
   using Plots #make this a Test dependency, as all plotting is in Recipes?
-  pyplot() #and add reuse=false to the first plot() to get a new window!
+  # pyplot() #and add reuse=false to the first plot() to get a new window!
 
   include("Unitfuller.jl")
   include("Point2D.jl") 

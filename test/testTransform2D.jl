@@ -12,18 +12,18 @@
 end
 
 @testset "Rotation" begin
-  p = Point(1m, 0m)
-  r = Rz(p, 90°)
-  @test r.x≈0m && r.y≈1m
+  p = Point(1u"m", 0u"m")
+  r = Rz(p, 90u"°")
+  @test r.x≈0u"m" && r.y≈1u"m"
 
-  r = Rz(p, -90°)
-  @test r.x≈0m && r.y≈-1m
+  r = Rz(p, -90u"°")
+  @test r.x≈0u"m" && r.y≈-1u"m"
 end
 
 @testset "Translation" begin
-  p = Point(1m, 1m)
-  t = Tx(p, 1mm)
-  t = Ty(t, 1mm)
-  @test t.x == 1001mm && t.y == 1001mm
+  p = Point(1u"m", 1u"m")
+  t = Tx(p, 1u"mm")
+  t = Ty(t, 1u"mm")
+  @test t.x == 1001u"mm" && t.y == 1001u"mm"
 end
 

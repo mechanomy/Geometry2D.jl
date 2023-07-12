@@ -141,12 +141,11 @@ function (/)(d::Delta, f::Real) :: Delta
   # return Delta(d.dx/f, d.dy/f)
 end
 
-import Base.angle
 """ 
     angle(d::Delta) :: Radian
 Calculate the angle of Delta `d` relative to global x = horizontal.
 """
-function angle(d::Delta) :: Radian
+function Base.angle(d::Delta) :: Radian
   # return angle(d) * 1.0u"rad" just calls itself, not the Real producing
   return atan(d.dy, d.dx) * 1.0u"rad"
 end
@@ -158,7 +157,7 @@ end
     angle(d::Delta) :: Real
 Calculate the angle of Delta `d` relative to global x = horizontal.
 """
-function angle(d::Delta) :: Real
+function Base.angle(d::Delta) :: Real
   return atan(d.dy,d.dx) #this is atan2
 end
 

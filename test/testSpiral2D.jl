@@ -82,13 +82,13 @@ end
   @test_logs (:warn, "calcLength() given r1=$(s1.r1), coerced to 0 as r1 < 0 is nonsensical.") calcLength(s1)
 
   s2 = Spiral(a0=1.1u"°", a1=1.1u"°", r0=3.3u"m", r1=4.4u"m", pitch=5.5u"mm/rad") #straight line
-  @test isapprox( calcLength(s2), 1.1m )
+  @test isapprox( calcLength(s2), 1.1u"m" )
 
   s3 = Spiral(a0=0u"°", a1=360u"°", r0=3.3u"m", r1=3.3u"m") #circle circumference
-  @test isapprox( calcLength(s3), 2*π*3.3m )
+  @test isapprox( calcLength(s3), 2*π*3.3u"m" )
 
   s4 = Spiral(a0=0u"°", a1=360u"°", r0=3.3u"m", r1=4.4u"m") #length is the average circumference
-  @test isapprox( calcLength(s4), π*3.3m + π*4.4m )
+  @test isapprox( calcLength(s4), π*3.3u"m" + π*4.4u"m" )
 
   s5 = Spiral(a0=0u"°", a1=-360u"°", r0=3.3u"m", r1=4.4u"m") #ccw == cw lengths
   @test isapprox( calcLength(s4), calcLength(s5))

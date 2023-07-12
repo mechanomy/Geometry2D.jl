@@ -8,22 +8,26 @@
 # using Pkg
 # Pkg.activate( normpath(joinpath(@__DIR__, "..")) ) #activate this package
 
-using Test
-using Unitful, Unitful.DefaultSymbols
-using Plots
-pyplot()
-close("all")
-
 using Geometry2D
+
+using Test
+
+# using Unitful.DefaultSymbols
+
+using Unitful
+using Plots
+# # pyplot()
+# # close("all")
+
 
 include("testVector2D.jl")
 include("testTransform2D.jl")
 include("testPoint2D.jl")
 include("testCircle2D.jl")
 include("testSpiral2D.jl")
-include("testEllipse2D.jl")
 include("testTriangle2D.jl")
 include("testUnitfuller.jl")
+include("testEllipse2D.jl") #there's a namespace collision somewhere in here that segfaults the terminal, if this occurs later
 
 # using Unitful, Unitful.DefaultSymbols
 # using Test
@@ -49,7 +53,7 @@ include("testUnitfuller.jl")
 
 
 
-close("all")
+# close("all")
 
   
 ; #don't return the last thing
