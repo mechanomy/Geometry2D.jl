@@ -40,13 +40,12 @@ function delta(v::Vector2D) :: Delta
   return v.tip - v.origin
 end
 
-import Base.angle # Both Geometry2D and Base export a method angle(), leading to a collision even though they are differentiated by type, as https://discourse.julialang.org/t/two-modules-with-the-same-exported-function-name-but-different-signature/15231/13
 """
     angle(v::Vector2D) :: Angle
     angled(v::Vector2D) :: typeof(1.0u"°")
 Calculate the angle of [Vector2D](#Geometry2D.Vector2D) `v` relative to global x = horizontal, via atan().
 """
-function angle(v::Vector2D) :: Angle
+function Base.angle(v::Vector2D) :: Angle
   return angle(delta(v))
 end
 function angled(v::Vector2D) :: typeof(1.0u"°")
@@ -57,7 +56,7 @@ end
     isapprox(a::Vector2D, b::Vector2D; atol=0, rtol=√eps()) :: Bool 
 Approximately compare [Vector2D](#Geometry2D.Vector2D)s `a` to `b` via absolute tolerance `atol` and relative tolerance `rtol`, as in [isapprox](https://docs.julialang.org/en/v1/base/math/#Base.isapprox).
 """
-function isapprox(a::Vector2D, b::Vector2D; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
+function Base.isapprox(a::Vector2D, b::Vector2D; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
   return isapprox(a.origin, b.origin, atol=atol, rtol=rtol) && isapprox(a.tip, b.tip, atol=atol, rtol=rtol) 
 end
 

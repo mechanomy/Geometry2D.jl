@@ -14,7 +14,7 @@
 import Base.+, Base.-, Base.*, Base./, Base.isapprox
 import LinearAlgebra.norm 
 
-export Point, Delta, UnitVector2D, distance, angle, angled, length, normalize, norm, isapprox
+export Point, Delta, UnitVector2D, distance, angle, angler, angled, length, normalize, norm, isapprox
 
 """
 A point on the cartesian plane, measured in `x` and `y` from the plane's origin.
@@ -145,7 +145,7 @@ end
     angle(d::Delta) :: Radian
 Calculate the angle of Delta `d` relative to global x = horizontal.
 """
-function Base.angle(d::Delta) :: Radian
+function angler(d::Delta) :: Radian
   # return angle(d) * 1.0u"rad" just calls itself, not the Real producing
   return atan(d.dy, d.dx) * 1.0u"rad"
 end

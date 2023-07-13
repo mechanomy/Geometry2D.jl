@@ -11,14 +11,12 @@ This is a flat module with entities grouped into similar files under `src`.
 See online documentation at https://mechanomy.github.io/Geometry2D.jl/dev/ and [test](https://github.com/mechanomy/Geometry2D.jl/tree/main/test) for examples of each function.
 """
 module Geometry2D
-  using DocStringExtensions
   using Unitful
+  using DimensionfulAngles # https://github.com/cmichelenstrofer/DimensionfulAngles.jl
   using KeywordDispatch
   using RecipesBase
 
-  using Test
-  using Plots #make this a Test dependency, as all plotting is in Recipes?
-  # pyplot() #and add reuse=false to the first plot() to get a new window!
+  using DocStringExtensions # https://docstringextensions.juliadocs.org/latest/ how to make this a doc dependency?
 
   include("Unitfuller.jl")
   include("Point2D.jl") 

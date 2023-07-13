@@ -54,6 +54,7 @@ end
   dl = pa-pb
   @test angle(dl) ≈ atan(4,3)
   @test angle(dl) ≈ 0.927295218u"rad"
+  @test isapprox(angler(dl), 0.927295218u"rad", rtol=3) 
   @test isapprox(angled(dl), 53.1301u"°", rtol=3) 
 end
 

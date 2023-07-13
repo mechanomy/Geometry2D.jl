@@ -83,7 +83,7 @@ end
     isapprox(a::UnitVector, b::UnitVector; atol=0, rtol=√eps()) :: Bool 
 Approximately compare UnitVectors `a` to `b` via absolute tolerance `atol` and relative tolerance `rtol`, as in [isapprox](https://docs.julialang.org/en/v1/base/math/#Base.isapprox).
 """
-function isapprox(a::UnitVector, b::UnitVector; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
+function Base.isapprox(a::UnitVector, b::UnitVector; atol=0, rtol=√eps()) :: Bool #these defaults copied from the docs
   return isapprox( ustrip(unit(a.x), a.x), ustrip(unit(a.x), b.x), atol=atol, rtol=rtol) &&  #compare all in the unit of p.x
          isapprox( ustrip(unit(a.x), a.y), ustrip(unit(a.x), b.y), atol=atol, rtol=rtol) && 
          isapprox( ustrip(unit(a.x), a.z), ustrip(unit(a.x), b.z), atol=atol, rtol=rtol)

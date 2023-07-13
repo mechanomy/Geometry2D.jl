@@ -1,5 +1,6 @@
 name = "Geometry2D Documentation"
 authors = ["Ben Conrad <ben@mechanomy.com>"]
+uuid = "91d09732-8952-3fe9-a745-3bacf4fd5e58"
 
 [deps]
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
