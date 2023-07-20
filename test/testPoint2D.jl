@@ -1,20 +1,22 @@
-
-
 # test rationale:
-# - Uniful conversions are correct
+# - assume Uniful conversions are correct but test common usage
 # - assignments correct
 
 @testset "Point constructor" begin
   p = Point(1u"mm", 2u"inch")
   @test p.x == 1e-3u"m" && p.y == 50.8u"mm"
 
-  p = Point(x=1u"m",y=2u"m")
+  p = Point(x=1u"cm",y=2u"m")
+  @test p.x == 0.01u"m" && p.y == 2u"m"
+
+  p = Point(x=1,y=2)
   @test p.x == 1u"m" && p.y == 2u"m"
 end
 
 @testset "Delta constructor" begin
-  dab = Delta(3u"m", 4u"m")
-  @test dab.dx == 3u"m" && dab.dy == 4u"m"
+  dab = Delta(3u"m", 2u"inch")
+  @test dab.dx == 3u"m" && dab.dy == 50.8u"mm"
+
   dab = Delta(dx=3u"m", dy=4u"m")
   @test dab.dx == 3u"m" && dab.dy == 4u"m"
 end
@@ -107,13 +109,17 @@ end
   @test isapprox(ua, uc, rtol=1e-3) == true
 end
 
-
 @testset "Point recipe" begin
-  pt = Point(1u"mm",2u"mm")
-  p = plot(pt, reuse=false)
-  p = plot!( Point(1u"mm",3u"mm"), color=:red )
-  p = plot!( Point(2u"mm",3u"mm"), markersize=10)
-  p = plot!( Point(3u"mm",3u"mm"), markershape=:diamond)
-  display(p)
+  function fun(fname)
+    pt = Point(1u"mm",2u"mm")
+    p = plot(pt, reuse=false)
+    p = plot!( Point(1u"mm",3u"mm"), color=:red )
+    p = plot!( Point(5u"m",3u"mm"), markersize=10)
+    p = plot!( Point(3u"mm",3u"mm"), markershape=:diamond)
+    # @show p
+    savefig(p, fname)
+    # display(p)
+  end
+  @visualtest fun "test/VisualRegressionTests/threePoints.png" true 0.2
 end
 

@@ -141,7 +141,7 @@ function Rz(p::Point, a::Angle) :: Point
 end
 
 """
-   Tx(a::Real)
+    Tx(a::Real)
 Create a 2D translation matrix translating along local X an angle `a`.
 Homogeneous transformation matrices are multiplicative and therefore should be unitless.
 """
@@ -160,7 +160,7 @@ end
 
 
 """
-   Ty(b::Real)
+    Ty(b::Real)
 Create a 2D translation matrix translating along local Y by `b`.
 Homogeneous transformation matrices are multiplicative and therefore should be unitless.
 """
