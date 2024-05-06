@@ -27,60 +27,93 @@ export legLeg2Hypotenuse, legHypotenuse2Leg, angleOpposite2Adjacent, angleAdjace
     legLeg2Hypotenuse(; a::Unitful.Length, b::Unitful.Length ) :: Unitful.Length
 For a right triangle, find the length of the hypotenuse from the shorter legs `a` and `b`.
 """
-function legLeg2Hypotenuse( a::Unitful.Length, b::Unitful.Length ) :: Unitful.Length
-  return sqrt( a^2 + b^2 )
+function legLeg2Hypotenuse( a::AbstractLength, b::AbstractLength) :: AbstractLength 
+  T = typeof(a)
+  # return T(sqrt( a*a + b*b ))  # waiting for sqrt to push in UnitTypes
+  return T( sqrt(toBaseFloat(a)^2 + toBaseFloat(b)^2))
 end
-legLeg2Hypotenuse(; a::Unitful.Length, b::Unitful.Length ) = legLeg2Hypotenuse( a, b )
+legLeg2Hypotenuse(; a::AbstractLength, b::AbstractLength) = legLeg2Hypotenuse( a, b )
+@testitem "legLeg2Hypotenuse" begin
+  using UnitTypes
+  @test legLeg2Hypotenuse( Meter(1), Meter(1) ) ≈ Meter(√2)
+  @test legLeg2Hypotenuse( a=Meter(1), b=Meter(1) ) ≈ Meter(√2)
+end
+
 
 """
     legHypotenuse2Leg( leg::Unitful.Length, hyp::Unitful.Length  ) :: Unitful.Length
     legHypotenuse2Leg(; leg::Unitful.Length, hyp::Unitful.Length  ) :: Unitful.Length
 For a right triangle, find the length of the third leg from hypotenuse `hyp` and `leg`.
 """
-function legHypotenuse2Leg( leg::Unitful.Length, hyp::Unitful.Length  ) :: Unitful.Length
+function legHypotenuse2Leg( leg::AbstractLength, hyp::AbstractLength) :: AbstractLength 
   if hyp < leg
     throw( ArgumentError("leg[$leg] should be < than hyp[$hyp]") )
   end
-  return sqrt( hyp^2 - leg^2 )
+  T = typeof(leg)
+  # return T(sqrt( hyp*hyp - leg*leg ))
+  return T(sqrt( toBaseFloat(hyp)^2 - toBaseFloat(leg)^2 ))
 end
-legHypotenuse2Leg(; leg::Unitful.Length, hyp::Unitful.Length  ) = legHypotenuse2Leg( leg, hyp )
+legHypotenuse2Leg(; leg::AbstractLength, hyp::AbstractLength) = legHypotenuse2Leg( leg, hyp )
+@testitem "legHypotenuse2Leg" begin
+  using UnitTypes
+  @test isapprox(legHypotenuse2Leg( Meter(1), Meter(√2) ), Meter(1), rtol=1e-3)
+  @test isapprox(legHypotenuse2Leg( leg=Meter(1), hyp=Meter(√2) ), Meter(1), rtol=1e-3)
+end
 
 """
     angleOpposite2Adjacent(angle::Angle, opposite::Unitful.Length) :: Unitful.Length
     angleOpposite2Adjacent(; angle::Angle, opposite::Unitful.Length) :: Unitful.Length
 For a right triangle, find the length of the 'adjacent' leg, given `angle` and `opposite`.
 """
-function angleOpposite2Adjacent(angle::Angle, opposite::Unitful.Length) :: Unitful.Length
-  return opposite / tan(angle)
+function angleOpposite2Adjacent(angle::AbstractAngle, opposite::AbstractLength) :: AbstractLength 
+  T = typeof(opposite)
+  return T(opposite / tan(angle))
 end
-angleOpposite2Adjacent(; angle::Angle, opposite::Unitful.Length) = angleOpposite2Adjacent( angle, opposite )
+angleOpposite2Adjacent(; angle::AbstractAngle, opposite::AbstractLength) = angleOpposite2Adjacent( angle, opposite )
+@testitem "angleOpposite2Adjacent" begin
+  using UnitTypes
+  @test isapprox(angleOpposite2Adjacent( Radian(π/4), Meter(1) ), Meter(1), rtol=1e-3)
+end
+
 
 """
     angleAdjacent2Opposite(angle::Angle, adjacent::Unitful.Length) :: Unitful.Length
     angleAdjacent2Opposite(angle::Angle, adjacent::Unitful.Length) :: Unitful.Length
 For a right triangle, find the length of the 'opposite' leg, given `angle` and `adjacent`.
 """
-function angleAdjacent2Opposite(angle::Angle, adjacent::Unitful.Length) :: Unitful.Length
-  return adjacent * tan(angle)
+function angleAdjacent2Opposite(angle::AbstractAngle, adjacent::AbstractLength) :: AbstractLength 
+  T = typeof(adjacent)
+  return T(adjacent * tan(angle))
 end
-angleAdjacent2Opposite(; angle::Angle, adjacent::Unitful.Length) = angleAdjacent2Opposite( angle, adjacent )
+angleAdjacent2Opposite(; angle::AbstractAngle, adjacent::AbstractLength) = angleAdjacent2Opposite( angle, adjacent )
+@testitem "angleAdjacent2Opposite" begin
+  using UnitTypes
+  @test isapprox(angleAdjacent2Opposite( Radian(π/4), Meter(1) ), Meter(1), rtol=1e-3)
+end
+
 
 """
     lawOfCosines(legA::Unitful.Length, legB::Unitful.Length, angleAB::Angle) :: Unitful.Length
     lawOfCosines(legA::Unitful.Length, legB::Unitful.Length, angleAB::Angle) :: Unitful.Length
 For any triangle, finds the length of the unknown `legC` from `legA`, `legB`, and `angleAB` between them.
 """
-function lawOfCosines(legA::Unitful.Length, legB::Unitful.Length, angleAB::Angle) :: Unitful.Length
-  return sqrt( legA^2 + legB^2 -2*legA*legB*cos(angleAB))
+function lawOfCosines(legA::AbstractLength, legB::AbstractLength, angleAB::AbstractAngle) :: AbstractLength 
+  T = typeof(legA)
+  # return T(sqrt( legA*legA + legB*legB -2*legA*legB*cos(angleAB)))
+  return T(sqrt( toBaseFloat(legA)^2 + toBaseFloat(legB)^2 -2*toBaseFloat(legA)*toBaseFloat(legB)*cos(angleAB)))
 end
-lawOfCosines(; legA::Unitful.Length, legB::Unitful.Length, angleAB::Angle) = lawOfCosines( legA, legB, angleAB )
+lawOfCosines(; legA::AbstractLength, legB::AbstractLength, angleAB::AbstractAngle) = lawOfCosines( legA, legB, angleAB )
+@testitem "lawOfCosines" begin
+  using UnitTypes
+  @test isapprox(lawOfCosines(Meter(1), Meter(1), Radian(Degree(135))), legLeg2Hypotenuse( Meter(1+√.5), Meter(√.5) ) , rtol=1e-3)
+end
 
 """
     lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle) :: Unitful.Length
     lawOfSines(; legA::Unitful.Length, angleBC::Angle, angleCA::Angle) :: Unitful.Length
 For any triangle with legs A, B, C and angles AB, BC, CA, so that `legA` is the open side of `angleBC`, finds legB corresponding to `angleCA`.
 """
-function lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle) :: Unitful.Length
+function lawOfSines(legA::AbstractLength, angleBC::AbstractAngle, angleCA::AbstractAngle) :: AbstractLength 
   return legA * sin(angleCA)/sin(angleBC)
   # function lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle, showDiagram=false)
   # if showDiagram
@@ -120,6 +153,9 @@ function lawOfSines(legA::Unitful.Length, angleBC::Angle, angleCA::Angle) :: Uni
   #   grid()
   # end
 end
-lawOfSines(; legA::Unitful.Length, angleBC::Angle, angleCA::Angle) = lawOfSines( legA, angleBC, angleCA )
-
+lawOfSines(; legA::AbstractLength, angleBC::AbstractAngle, angleCA::AbstractAngle) = lawOfSines( legA, angleBC, angleCA )
+@testitem "lawOfSines" begin
+  using UnitTypes
+  @test isapprox(lawOfSines( Meter(1), Radian(Degree(45)), Radian(Degree(45))), Meter(1), rtol=1e-3)
+end
 

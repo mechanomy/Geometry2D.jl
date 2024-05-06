@@ -6,7 +6,7 @@
 
 
 
-using ArbNumerics #for elliptic_e below
+using ArbNumerics #for elliptic_e below; v 1.5 is segfaulting, punt for now https://github.com/JeffreySarnoff/ArbNumerics.jl/issues/68
 
 export ellipticArcLength
 
@@ -49,26 +49,67 @@ function ellipticArcLength(a::Number, b::Number, angle::Number ) :: Number
   # @show x = elliptic_e( ArbReal(phi), ArbReal(me) )
 
   # return abs(b*elliptic_e( ArbReal(phi), ArbReal(me) ))
+  # @show phi
+  # @show me
   return abs(b*elliptic_e( ArbFloat(phi), ArbFloat(me) ))
 end
-
-"""
-    ellipticArcLength(a::Unitful.Length, b::Unitful.Length, angle::Angle)
-Unitful version.
-Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` through `angle`, measured from major axis `a`, via elliptic integral:.
-L = b * elliptic_e( atan(a/b*tan(angle)), 1-a^2/b^2 )
-"""
-function ellipticArcLength(a::Unitful.Length, b::Unitful.Length, angle::Angle)
-    return ellipticArcLength( ustrip(unit(a), a), ustrip(unit(a), b), ustrip(u"rad", angle)) * unit(a)
+@testitem "ellipticArcLength calculation from x-axis" begin
+  @test true
+  #negative or positive have same length
+  n60 = ellipticArcLength( 50, 20, deg2rad(-60) ) 
+  n10 = ellipticArcLength( 50, 20, deg2rad(-10) )
+  p10 = ellipticArcLength( 50, 20, deg2rad( 10) )
+  p60 = ellipticArcLength( 50, 20, deg2rad( 60) )
+  @test n60 == p60
+  @test n10 == p10
 end
 
-"""
-    ellipticArcLength(a::Number, b::Number, start::Number, stop::Number)
-Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` between `start` and `stop` angles, as measured from the major axis `a`.
-"""
-function ellipticArcLength(a::Number, b::Number, start::Number, stop::Number)
-  lStart = ellipticArcLength(a,b, start)
-  lStop = ellipticArcLength(a,b, stop)
-  return lStop - lStart
-end
+# """
+#     ellipticArcLength(a::AbstractLength, b::AbstractLength, angle::Angle)
+# Unitful version.
+# Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` through `angle`, measured from major axis `a`, via elliptic integral:.
+# L = b * elliptic_e( atan(a/b*tan(angle)), 1-a^2/b^2 )
+# """
+# function ellipticArcLength(a::AbstractLength, b::AbstractLength, angle::AbstractAngle)
+#     return ellipticArcLength( ustrip(unit(a), a), ustrip(unit(a), b), ustrip(u"rad", angle)) * unit(a)
+# end
+# @testitem "ellipticArcLength UnitTypes" begin
+#   using UnitTypes
+#   a = Inch(3)
+#   b = MilliMeter(10)
+#   ang = Degree(10)
+#   eal = ellipticArcLength(a,b,ang)
+#   @test isapprox(eal, Inch(1.2822), rtol=1e-3 )
+# end
 
+
+# """
+#     ellipticArcLength(a::Number, b::Number, start::Number, stop::Number)
+# Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` between `start` and `stop` angles, as measured from the major axis `a`.
+# """
+# function ellipticArcLength(a::Number, b::Number, start::Number, stop::Number)
+#   lStart = ellipticArcLength(a,b, start)
+#   lStop = ellipticArcLength(a,b, stop)
+#   return lStop - lStart
+# end
+# function ellipticArcLength(a::AbstractLength, b::AbstractLength, start::AbstractAngle, stop::AbstractAngle)
+#   lStart = ellipticArcLength(a,b, start)
+#   lStop = ellipticArcLength(a,b, stop)
+#   return lStop - lStart
+# end
+# @testitem "ellipticArcLength between angles" begin
+#   k5020 = 36.874554322338
+#   k50020 = 99.072689284541
+#   l5020 = ellipticArcLength( 50, 20, deg2rad(10), deg2rad(60) )
+#   l50020 = ellipticArcLength( 500, 20, deg2rad(10), deg2rad(60) )
+#   @test k5020 ≈ l5020
+#   @test k50020 ≈ l50020
+# end
+
+# @testitem "ellipticArcLength test throws" begin
+#   @test_throws DomainError ellipticArcLength( 20, 50, deg2rad(10), deg2rad(60) )
+#   @test_throws DomainError ellipticArcLength( -20, 50, deg2rad(10), deg2rad(60) )
+#   @test_throws DomainError ellipticArcLength( 20, -50, deg2rad(10), deg2rad(60) )
+#   @test_throws DomainError ellipticArcLength( 50, 20, deg2rad(200) )
+#   @test_throws DomainError ellipticArcLength( 50, 20, deg2rad(-200) )
+# end

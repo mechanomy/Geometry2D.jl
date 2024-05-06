@@ -11,21 +11,29 @@ This is a flat module with entities grouped into similar files under `src`.
 See online documentation at https://mechanomy.github.io/Geometry2D.jl/dev/ and [test](https://github.com/mechanomy/Geometry2D.jl/tree/main/test) for examples of each function.
 """
 module Geometry2D
+
+  using TestItems
+
   using Unitful
-  using DimensionfulAngles # https://github.com/cmichelenstrofer/DimensionfulAngles.jl
+  using UnitTypes
+  # include("../../UnitTypes_public/src/UnitTypes.jl")
+  # using .UnitTypes
+
+  # using DimensionfulAngles # https://github.com/cmichelenstrofer/DimensionfulAngles.jl
   using KeywordDispatch
   using RecipesBase
-
   using DocStringExtensions # https://docstringextensions.juliadocs.org/latest/ how to make this a doc dependency?
 
-  include("Unitfuller.jl")
+  # __precompile__(false) # don't precompile during dev
+
+  # include("Unitfuller.jl")
   include("Point2D.jl") 
   include("Vector2D.jl")
   include("Triangle2D.jl")
   include("Circle2D.jl")
-  include("Ellipse2D.jl")
-  include("Transform2D.jl")
   include("Spiral2D.jl")
+  include("Transform2D.jl")
 
+  # include("Ellipse2D.jl") #waiting on a segfault to resolve https://github.com/JeffreySarnoff/ArbNumerics.jl/issues/68
 end; 
 
