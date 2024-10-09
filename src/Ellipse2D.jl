@@ -4,65 +4,62 @@
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+# using ArbNumerics #for elliptic_e below; v 1.5 is segfaulting, punt for now https://github.com/JeffreySarnoff/ArbNumerics.jl/issues/68
 
+# export ellipticArcLength
 
-using ArbNumerics #for elliptic_e below; v 1.5 is segfaulting, punt for now https://github.com/JeffreySarnoff/ArbNumerics.jl/issues/68
+# """
+#     ellipticArcLength(a::Number, b::Number, angle::Number ) :: Number
+# Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` through `angle`, measured from `a`, via elliptic integral:
+# L = b * elliptic_e( atan(a/b*tan(angle)), 1-a^2/b^2 )
+# """
+# function ellipticArcLength(a::Number, b::Number, angle::Number ) :: Number
+#   # see: https://math.stackexchange.com/a/1123737/974011 
 
-export ellipticArcLength
+#   if a < 0
+#     throw(DomainError(a, "major axis [$a] must be greater than 0"))
+#   end
+#   if b < 0
+#     throw(DomainError(b, "minor axis [$b] must be greater than 0"))
+#   end
+#   if a < b
+#     throw(DomainError(a, "major axis [$a] is smaller than minor axis [$b]"))
+#   end
+#   if pi/2 < angle
+#     throw(DomainError(angle, "angle[$angle] should be less than pi/2"))
+#   end
+#   if angle < -pi/2
+#     throw(DomainError(angle, "angle[$angle] should be greater than -pi/2"))
+#   end
 
-"""
-    ellipticArcLength(a::Number, b::Number, angle::Number ) :: Number
-Calculates the arc length of an ellipse from major axis `a` towards minor axis `b` through `angle`, measured from `a`, via elliptic integral:
-L = b * elliptic_e( atan(a/b*tan(angle)), 1-a^2/b^2 )
-"""
-function ellipticArcLength(a::Number, b::Number, angle::Number ) :: Number
-  # see: https://math.stackexchange.com/a/1123737/974011 
+#   # 230712 - getting a segfault when using ArbReal:
+#   # println("a $a $(typeof(a))")
+#   # println("b $b $(typeof(b))")
+#   # println("angle $angle $(typeof(angle))")
+#   @show a
+#   @show b
+#   @show angle
+#   @show phi = atan( a/b*tan(angle))
+#   @show me = 1 - (a/b)^2
+#   # println("me $me $(typeof(me))")
+#   # println("ArbReal(me) $(ArbReal(me)) $(typeof(ArbReal(me)))")
+#   # println("phi $phi $(typeof(phi))")
+#   # println("ArbReal(phi) $(ArbReal(phi)) $(typeof(ArbReal(phi)))")
+#   # @show abs(b*elliptic_e( ArbFloat(phi), ArbFloat(me) ))
+#   # println("this line segfaults: x = elliptic_e( ArbReal(phi), ArbReal(me)")
+#   # @show x = elliptic_e( ArbReal(phi), ArbReal(me) )
 
-  if a < 0
-    throw(DomainError(a, "major axis [$a] must be greater than 0"))
-  end
-  if b < 0
-    throw(DomainError(b, "minor axis [$b] must be greater than 0"))
-  end
-  if a < b
-    throw(DomainError(a, "major axis [$a] is smaller than minor axis [$b]"))
-  end
-  if pi/2 < angle
-    throw(DomainError(angle, "angle[$angle] should be less than pi/2"))
-  end
-  if angle < -pi/2
-    throw(DomainError(angle, "angle[$angle] should be greater than -pi/2"))
-  end
-
-  # 230712 - getting a segfault when using ArbReal:
-  # println("a $a $(typeof(a))")
-  # println("b $b $(typeof(b))")
-  # println("angle $angle $(typeof(angle))")
-  phi = atan( a/b*tan(angle))
-  me = 1 - (a/b)^2
-  # println("me $me $(typeof(me))")
-  # println("ArbReal(me) $(ArbReal(me)) $(typeof(ArbReal(me)))")
-  # println("phi $phi $(typeof(phi))")
-  # println("ArbReal(phi) $(ArbReal(phi)) $(typeof(ArbReal(phi)))")
-  # @show abs(b*elliptic_e( ArbFloat(phi), ArbFloat(me) ))
-  # println("this line segfaults: x = elliptic_e( ArbReal(phi), ArbReal(me)")
-  # @show x = elliptic_e( ArbReal(phi), ArbReal(me) )
-
-  # return abs(b*elliptic_e( ArbReal(phi), ArbReal(me) ))
-  # @show phi
-  # @show me
-  return abs(b*elliptic_e( ArbFloat(phi), ArbFloat(me) ))
-end
-@testitem "ellipticArcLength calculation from x-axis" begin
-  @test true
-  #negative or positive have same length
-  n60 = ellipticArcLength( 50, 20, deg2rad(-60) ) 
-  n10 = ellipticArcLength( 50, 20, deg2rad(-10) )
-  p10 = ellipticArcLength( 50, 20, deg2rad( 10) )
-  p60 = ellipticArcLength( 50, 20, deg2rad( 60) )
-  @test n60 == p60
-  @test n10 == p10
-end
+#   # return abs(b*elliptic_e( ArbReal(phi), ArbReal(me) )) # 241009: Exception (FLINT memory_manager). Unable to allocate memory (2920)./ Exception (FLINT memory_manager). Unable to allocate memory (2784)./ [17208] signal 22: SIGABRT / Segmentation fault 
+#   # return abs(b*elliptic_e( ArbFloat(phi), ArbFloat(me) )) # https://github.com/JeffreySarnoff/ArbNumerics.jl/issues/68
+#   # return @show abs(b*elliptic_e( ArbComplex(phi, me) )) # 241009: ERROR: LoadError: promotion of types Int64 and ArbNumerics.ArbComplex{128} failed to change any arguments
+#   return abs(b*Float64(magnitude(elliptic_e( ArbComplex(phi, me))) ))  # this is not mathematically correct, pulling the whole hting
+# end
+# @testitem "ellipticArcLength calculation from x-axis" begin
+#   #negative or positive have same length
+#   # @test ellipticArcLength( 50, 20, deg2rad(10) ) == 9.3916980389127042432702060558045187665696095858644936618297374727 # https://www.wolframalpha.com/input?i=20*EllipticE%5BArcTan%5B50%2F20*Tan%5B10%C2%B0%5D%5D%2C1-%2850%2F20%29%5E2%5D
+#   @test ellipticArcLength( 50, 20, deg2rad(-60) ) ≈ ellipticArcLength( 50, 20, deg2rad( 60) )
+#   @test ellipticArcLength( 50, 20, deg2rad(-10) ) ≈ ellipticArcLength( 50, 20, deg2rad( 10) )
+# end
 
 # """
 #     ellipticArcLength(a::AbstractLength, b::AbstractLength, angle::Angle)
@@ -81,7 +78,6 @@ end
 #   eal = ellipticArcLength(a,b,ang)
 #   @test isapprox(eal, Inch(1.2822), rtol=1e-3 )
 # end
-
 
 # """
 #     ellipticArcLength(a::Number, b::Number, start::Number, stop::Number)
