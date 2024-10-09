@@ -14,7 +14,7 @@ module Geometry2D
 
   using TestItems
 
-  using Unitful
+  # using Unitful
   using UnitTypes
   # include("../../UnitTypes_public/src/UnitTypes.jl")
   # using .UnitTypes
@@ -34,6 +34,8 @@ module Geometry2D
   include("Spiral2D.jl")
   include("Transform2D.jl")
 
-  # include("Ellipse2D.jl") #waiting on a segfault to resolve https://github.com/JeffreySarnoff/ArbNumerics.jl/issues/68
+  include("Ellipse2D.jl") #waiting on a segfault to resolve https://github.com/JeffreySarnoff/ArbNumerics.jl/issues/68
+
+  include("Point3D.jl") 
 end; 
 

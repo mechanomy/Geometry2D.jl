@@ -11,7 +11,7 @@ export Spiral, calcPitch, calcLength, isIncreasing, isDecreasing, isClockwise, i
 
 
 # @deriveMeasure Radian(2*π) = Revolution(1) "rev"
-# @deriveMeasure Meter(1)/Revolution(1) = Pitch(1) "m/rev" # can't do this yet
+# @deriveMeasure Pitch(1) = Meter(1)/Revolution(1) "m/rev" # can't do this yet
   # @ test typeof(Revolution(1)) <: AbstractRevolution
   # @ test typeof(Revolution(1)) <: AbstractAngle
   # @ test typeof(Meter(1)/Revolution(1)) <: AbstractPitch

@@ -5,18 +5,16 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using TestItemRunner # https://github.com/julia-vscode/TestItemRunner.jl 
-# @run_package_tests verbose=true
-@run_package_tests verbose=true filter=ti->(occursin("Point2D", ti.filename))
-@run_package_tests verbose=true filter=ti->(occursin("Vector2D", ti.filename))
-@run_package_tests verbose=true filter=ti->(occursin("Triangle2D", ti.filename))
-@run_package_tests verbose=true filter=ti->(occursin("Circle2D", ti.filename))
-@run_package_tests verbose=true filter=ti->(occursin("Spiral2D", ti.filename))
-@run_package_tests verbose=true filter=ti->(occursin("Transform2D", ti.filename))
+@run_package_tests verbose=true
+# @run_package_tests verbose=true filter=ti->(occursin("Point2D", ti.filename))
+# @run_package_tests verbose=true filter=ti->(occursin("Vector2D", ti.filename))
+# @run_package_tests verbose=true filter=ti->(occursin("Triangle2D", ti.filename))
+# @run_package_tests verbose=true filter=ti->(occursin("Circle2D", ti.filename))
+# @run_package_tests verbose=true filter=ti->(occursin("Spiral2D", ti.filename))
+# @run_package_tests verbose=true filter=ti->(occursin("Transform2D", ti.filename))
 
 # @run_package_tests verbose=true filter=ti->(occursin("Ellipse2D", ti.filename))
 
 # close("all")
-
-
 
 ; #don't return the last thing
