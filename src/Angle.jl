@@ -6,21 +6,22 @@
 
 
 
-# Additional Unitful definitions
-
 export angleWrap
-
-# @derived_dimension Radian dimension(u"rad")
-# @derived_dimension Degree dimension(2*pi)
-# @unit deg "deg" Degree 360/2*pi false
-# Angle{T} = Union{Quantity{T,NoDims,typeof(u"rad")}, Quantity{T,NoDims,typeof(u"°")}} where T
 
 """
     angleWrap(angle::Radian) :: Radian
 Wraps `angle` between 0 and 2π.
 """
-function angleWrap(ang::Radian) :: Radian
+function angleWrap(ang::AbstractAngle) :: Radian
   return Radian( angleWrap(ang.value) )
+end
+
+@testitem "angleWrap(Radian)" begin
+  using UnitTypes
+  @test angleWrap(Radian(-7)) ≈ Radian(2*π-7)
+  @test angleWrap(Radian(-1)) ≈ Radian(2*π-1)
+  @test angleWrap(Radian(1)) ≈ Radian(1)
+  @test angleWrap(Radian(7)) ≈ Radian(7-2*π)
 end
 
 """
@@ -30,4 +31,12 @@ Wraps `angle` between 0 and 2π.
 function angleWrap(angle::Real) :: Real
   return (angle + 2*pi)%(2*pi)
 end
+@testitem "angleWrap(Real)" begin
+  @test angleWrap(-7) ≈ 2*π-7
+  @test angleWrap(-1) ≈ 2*π-1
+  @test angleWrap(1) ≈ 1
+  @test angleWrap(7) ≈ 7-2*π
+end
+
+
 

@@ -14,7 +14,6 @@ module Geometry2D
 
   using TestItems
 
-  # using Unitful
   using UnitTypes
   # include("../../UnitTypes_public/src/UnitTypes.jl")
   # using .UnitTypes
@@ -26,7 +25,7 @@ module Geometry2D
 
   # __precompile__(false) # don't precompile during dev
 
-  # include("Unitfuller.jl")
+  include("Angle.jl")
   include("Point2D.jl") 
   include("Vector2D.jl")
   include("Triangle2D.jl")
