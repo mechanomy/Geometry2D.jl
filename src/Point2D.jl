@@ -219,6 +219,7 @@ Calculate the angle of Delta `d` relative to global x = horizontal.
 function Base.angle(d::Delta) :: Real 
   return atan(d.dy.value,d.dx.value) #this is atan2
 end
+
 """ 
     angleRadian(d::Delta) :: Radian
 Calculate the angle of Delta `d` relative to global x = horizontal.
@@ -241,6 +242,8 @@ end
   @test angleRadian(dl) ≈ Degree(45)
   @test angleDegree(dl) ≈ Degree(45)
 end
+
+# function acosRadian()::Radian # cf BeltTransmission.findTangents()
 
 """
     distance(a::Point2D, b::Point2D )

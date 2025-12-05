@@ -16,12 +16,14 @@ export Spiral, calcPitch, calcLength, isIncreasing, isDecreasing, isClockwise, i
   # @ test typeof(Revolution(1)) <: AbstractAngle
   # @ test typeof(Meter(1)/Revolution(1)) <: AbstractPitch
 @makeBaseMeasure Pitch MeterPerRev "m/rev" #defines AbstractPitch and MeterPerRev(): typeof(MeterPerRev(1)) <: AbstractPitch
-@deriveMeasure MeterPerRev(1) = MeterPerRad(1/(2*π)) "m/rad"
+# @deriveMeasure MeterPerRev(1) = MeterPerRad(1/(2*π)) "m/rad"
+@makeMeasure MeterPerRev = MeterPerRad "m/rad" 2*π
+
 @testitem "Unit definitions" begin
   using UnitTypes
   @test typeof(MeterPerRev(1)) <: AbstractPitch
   @test typeof(MeterPerRad(1)) <: AbstractPitch
-  @test MeterPerRev(MeterPerRad(1)) ≈ MeterPerRev(2*π)
+  @test isapprox( convert(MeterPerRev,MeterPerRad(1)), MeterPerRev(2*π), atol=1e-5)
 end
 
 """

@@ -1,10 +1,11 @@
 name = "Geometry2D"
 uuid = "91d09732-8952-4fe9-a745-3bacf4fd5e58"
 authors = ["Ben Conrad <ben@mechanomy.com>"]
-version = "0.1.4"
+version = "0.1.5"
 
 [deps]
 ArbNumerics = "7e558dbc-694d-5a72-987c-6f4ebed21442"
+Compat = "34da2185-b29b-5c13-b0c7-acf172513d20"
 DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 KeywordDispatch = "5888135b-5456-5c80-a1b6-c91ef8180460"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
